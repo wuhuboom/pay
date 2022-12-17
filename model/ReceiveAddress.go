@@ -189,6 +189,8 @@ func CheckTx(db *gorm.DB) {
 								UserID:      rEA.Username,
 							}
 							db.Save(&order)
+							change := BalanceChange{OriginalAmount: 0, ChangeAmount: newMoney, NowAmount: 0}
+							change.Add(db)
 						}
 
 					}

@@ -132,6 +132,8 @@ func Setup() *gin.Engine {
 		GroupV2.GET("/updateMoneyForAddressOnce", v2.UpdateMoneyForAddressOnce)
 		//获取账变订单  GetAccountChange
 		GroupV2.GET("/getAccountChange", v2.GetAccountChange)
+		//获取整个账户的张变  GetBalanceChange
+		GroupV2.GET("/getBalanceChange", v2.GetBalanceChange)
 
 	}
 

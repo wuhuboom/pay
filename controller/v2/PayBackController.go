@@ -84,7 +84,6 @@ func GetPayInformationBack(c *gin.Context) {
 		return
 	}
 
-
 	//寻找这个账号最早的充值订单
 	p1 := model.PrepaidPhoneOrders{Username: p.UserID, Successfully: p.Timestamp, AccountPractical: p.Amount, RechargeType: strings.ToUpper(p.Token), RechargeAddress: p.FromAddress, CollectionAddress: p.ToAddress}
 	p1.UpdateMaxCreatedOfStatusToTwo(mysql.DB, viper.GetInt64("eth.OrderEffectivityTime"))
@@ -96,6 +95,9 @@ func GetPayInformationBack(c *gin.Context) {
 	da := model.DailyStatistics{RechargeAccount: p.Amount}
 	da.UpdateDailyStatistics(mysql.DB)
 
+	//更新总的账变
+	change := model.BalanceChange{OriginalAmount: 0, ChangeAmount: p.Amount, NowAmount: 0}
+	change.Add(mysql.DB)
 	tools.ReturnError200(c, "插入成功")
 	return
 

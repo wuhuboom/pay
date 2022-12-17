@@ -7,6 +7,7 @@ import (
 	"github.com/wangyi/GinTemplate/tools"
 )
 
+// Login   管理员登录接口
 func Login(c *gin.Context) {
 	admin := model.Admin{}
 	err := mysql.DB.Where("username=?", c.Query("username")).Where("password=?", c.Query("password")).First(&admin).Error

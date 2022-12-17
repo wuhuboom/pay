@@ -46,6 +46,7 @@ func Init() error {
 	model.CheckIsExistModeDailyStatistics(DB)
 	model.CheckIsExistModeAdmin(DB)
 	model.CheckIsExistModeAccountChange(DB)
+	model.CheckIsExistBalanceChange(DB)
 	////////////////////////////////////////////////////////////////////////模型初始化
 	return err
 }

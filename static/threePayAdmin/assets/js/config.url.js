@@ -18,7 +18,7 @@ global_requestAddressJs_collection = global_requestAddress+ "/v2/collection";
 
 global_requestAddressJs_getAccountChange = global_requestAddress+ "/v2/getAccountChange";
 
-
+global_requestAddressJs_getBalanceChange = global_requestAddress+ "/v2/getBalanceChange";
 
 
 var getRootPath_webStr = getRootPath_web();
