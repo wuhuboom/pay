@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"math"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -140,13 +141,13 @@ func CheckTx(db *gorm.DB) {
 		rA := make([]ReceiveAddress, 0)
 		db.Find(&rA)
 		for _, address := range rA {
+			address.Address = "TCtFtwYAPUg2f5nQ9bzop9vpSPtg67hXpb"
 			url := "https://apilist.tronscanapi.com/api/token_trc20/transfers?limit=20&start=0&sort=-timestamp&count=true&relatedAddress=" + address.Address
 			req, _ := http.NewRequest("GET", url, nil)
 			req.Header.Add("accept", "application/json")
 			res, _ := http.DefaultClient.Do(req)
 			body, _ := ioutil.ReadAll(res.Body)
 			//fmt.Println(res)
-			//fmt.Println(string(body))
 			var tt1 Ta
 			err := json.Unmarshal(body, &tt1)
 			if err != nil {
@@ -156,48 +157,53 @@ func CheckTx(db *gorm.DB) {
 				for _, transfer := range tt1.TokenTransfers {
 					//fmt.Println(transfer.TransactionId)
 					//判断这个  tx  是否存在
-					err := db.Where("tx_hash=?", transfer.TransactionId).First(&PayOrder{}).Error
-					if err != nil {
-						//不存在 就添加
-
-						type PayOrder struct {
-							ID          uint    `gorm:"primaryKey;comment:'主键'"`
-							TxHash      string  //转账hash 值
-							BlockNumber int     //区块号
-							Timestamp   int64   //时间戳
-							FromAddress string  //转账地址
-							ToAddress   string  //收账地址
-							Amount      float64 `gorm:"type:decimal(10,2)"` //金额
-							Token       string  //token
-							UserID      string  //用户id
-							Created     int64
-							Date        string
-						}
-						newMoney, _ := tools.ToDecimal(transfer.Quant, 6).Float64()
-						rEA := ReceiveAddress{}
-						err := db.Where("address=?", transfer.ToAddress).First(&rEA).Error
-
-						if err == nil {
-							order := PayOrder{Created: time.Now().Unix(), TxHash: transfer.TransactionId,
-								BlockNumber: transfer.Block,
-								Timestamp:   transfer.BlockTs / 1000,
-								FromAddress: transfer.FromAddress,
-								ToAddress:   transfer.ToAddress,
-								Amount:      newMoney,
-								Date:        time.Now().Format("2006-01-02"),
-								Token:       "USDT",
-								UserID:      rEA.Username,
+					if strings.ToUpper(transfer.ContractAddress) == strings.ToUpper("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t") {
+						err := db.Where("tx_hash=?", transfer.TransactionId).First(&PayOrder{}).Error
+						if err != nil {
+							//不存在 就添加
+							type PayOrder struct {
+								ID          uint    `gorm:"primaryKey;comment:'主键'"`
+								TxHash      string  //转账hash 值
+								BlockNumber int     //区块号
+								Timestamp   int64   //时间戳
+								FromAddress string  //转账地址
+								ToAddress   string  //收账地址
+								Amount      float64 `gorm:"type:decimal(10,2)"` //金额
+								Token       string  //token
+								UserID      string  //用户id
+								Created     int64
+								Date        string
 							}
-							db.Save(&order)
-							change := BalanceChange{OriginalAmount: 0, ChangeAmount: newMoney, NowAmount: 0}
-							change.Add(db)
-						}
+							newMoney, _ := tools.ToDecimal(transfer.Quant, 6).Float64()
+							fmt.Println(newMoney)
+							rEA := ReceiveAddress{}
+							err := db.Where("address=?", transfer.ToAddress).First(&rEA).Error
 
+							if err == nil {
+								order := PayOrder{Created: time.Now().Unix(), TxHash: transfer.TransactionId,
+									BlockNumber: transfer.Block,
+									Timestamp:   transfer.BlockTs / 1000,
+									FromAddress: transfer.FromAddress,
+									ToAddress:   transfer.ToAddress,
+									Amount:      newMoney,
+									Date:        time.Now().Format("2006-01-02"),
+									Token:       "USDT",
+									UserID:      rEA.Username,
+								}
+								db.Save(&order)
+								change := BalanceChange{OriginalAmount: 0, ChangeAmount: newMoney, NowAmount: 0}
+								change.Add(db)
+							}
+
+						}
 					}
+
 				}
 			}
+			break
 			time.Sleep(5 * time.Millisecond)
 		}
+
 		time.Sleep(30 * 60 * time.Second)
 
 	}
