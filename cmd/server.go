@@ -93,7 +93,6 @@ func run(cmd *cobra.Command, args []string) {
 
 //初始化目录
 func initDir() {
-
 	if rootPath == "" {
 		rootPath = tools.GetRootPath()
 	}
@@ -103,7 +102,6 @@ func initDir() {
 	common.ConfigDirPath = rootPath + "/config/"
 	common.StaticDirPath = rootPath + "/static/"
 	common.UploadDirPath = rootPath + "/static/upload/"
-
 }
 
 //初始化守护进程

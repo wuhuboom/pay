@@ -10,6 +10,7 @@ package main
 import "github.com/wangyi/GinTemplate/cmd"
 
 func main() {
+//特使
 
 	cmd.Execute()
 
