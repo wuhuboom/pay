@@ -136,18 +136,16 @@ func CreateNewReceiveAddress(db *gorm.DB, url string) bool {
 }
 
 func CheckTx(db *gorm.DB) {
-
 	for true {
 		rA := make([]ReceiveAddress, 0)
 		db.Find(&rA)
 		for _, address := range rA {
-			address.Address = "TCtFtwYAPUg2f5nQ9bzop9vpSPtg67hXpb"
+			//address.Address = "TCtFtwYAPUg2f5nQ9bzop9vpSPtg67hXpb"
 			url := "https://apilist.tronscanapi.com/api/token_trc20/transfers?limit=20&start=0&sort=-timestamp&count=true&relatedAddress=" + address.Address
 			req, _ := http.NewRequest("GET", url, nil)
 			req.Header.Add("accept", "application/json")
 			res, _ := http.DefaultClient.Do(req)
 			body, _ := ioutil.ReadAll(res.Body)
-			//fmt.Println(res)
 			var tt1 Ta
 			err := json.Unmarshal(body, &tt1)
 			if err != nil {
@@ -175,10 +173,8 @@ func CheckTx(db *gorm.DB) {
 								Date        string
 							}
 							newMoney, _ := tools.ToDecimal(transfer.Quant, 6).Float64()
-							fmt.Println(newMoney)
 							rEA := ReceiveAddress{}
 							err := db.Where("address=?", transfer.ToAddress).First(&rEA).Error
-
 							if err == nil {
 								order := PayOrder{Created: time.Now().Unix(), TxHash: transfer.TransactionId,
 									BlockNumber: transfer.Block,
@@ -200,7 +196,30 @@ func CheckTx(db *gorm.DB) {
 
 				}
 			}
-			break
+
+			//获取账户的余额
+
+			url = "https://apilist.tronscanapi.com/api/account/tokens?address=" + address.Address + "&start=0&limit=20&token=&hidden=0&show=0&sortType=0"
+			req, _ = http.NewRequest("GET", url, nil)
+			req.Header.Add("accept", "application/json")
+			res, _ = http.DefaultClient.Do(req)
+			body, _ = ioutil.ReadAll(res.Body)
+			var tt2 Ta2
+			err = json.Unmarshal(body, &tt2)
+			if err != nil {
+				return
+			}
+			var newMoney float64
+			newMoney = 0
+			for _, datum := range tt2.Data {
+				if datum.TokenId == "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t" {
+					newMoney, _ = tools.ToDecimal(datum.Balance, 6).Float64()
+
+				}
+			}
+			//更新余额
+			affected := db.Model(&ReceiveAddress{}).Where("address=?", address.Address).Updates(map[string]interface{}{"Money": newMoney}).Error
+			fmt.Println(affected)
 			time.Sleep(5 * time.Millisecond)
 		}
 
@@ -264,4 +283,39 @@ type Ta struct {
 		ToAddressIsContract   bool `json:"toAddressIsContract"`
 		Revert                bool `json:"revert"`
 	} `json:"token_transfers"`
+}
+
+type Ta2 struct {
+	Total int `json:"total"`
+	Data  []struct {
+		Amount           interface{} `json:"amount"`
+		Quantity         interface{} `json:"quantity"`
+		TokenId          string      `json:"tokenId"`
+		TokenPriceInUsd  float64     `json:"tokenPriceInUsd"`
+		TokenName        string      `json:"tokenName"`
+		TokenAbbr        string      `json:"tokenAbbr"`
+		TokenCanShow     int         `json:"tokenCanShow"`
+		TokenLogo        string      `json:"tokenLogo"`
+		TokenPriceInTrx  float64     `json:"tokenPriceInTrx"`
+		AmountInUsd      float64     `json:"amountInUsd"`
+		Balance          string      `json:"balance"`
+		TokenDecimal     int         `json:"tokenDecimal"`
+		TokenType        string      `json:"tokenType"`
+		Vip              bool        `json:"vip"`
+		NrOfTokenHolders int         `json:"nrOfTokenHolders,omitempty"`
+		TransferCount    int         `json:"transferCount,omitempty"`
+		Project          string      `json:"project,omitempty"`
+	} `json:"data"`
+	ContractMap struct {
+		TR7NHqjeKQxGTCi8Q8ZY4PL8OtSzgjLj6T bool `json:"TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"`
+		Field2                             bool `json:"_"`
+	} `json:"contractMap"`
+	ContractInfo struct {
+		TR7NHqjeKQxGTCi8Q8ZY4PL8OtSzgjLj6T struct {
+			Tag1    string `json:"tag1"`
+			Tag1Url string `json:"tag1Url"`
+			Name    string `json:"name"`
+			Vip     bool   `json:"vip"`
+		} `json:"TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"`
+	} `json:"contractInfo"`
 }
