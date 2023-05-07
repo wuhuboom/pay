@@ -91,7 +91,7 @@ func run(cmd *cobra.Command, args []string) {
 	router.Setup()
 }
 
-//初始化目录
+// 初始化目录
 func initDir() {
 	if rootPath == "" {
 		rootPath = tools.GetRootPath()
@@ -104,7 +104,7 @@ func initDir() {
 	common.UploadDirPath = rootPath + "/static/upload/"
 }
 
-//初始化守护进程
+// 初始化守护进程
 func initDaemon() {
 
 	//启动进程之前要先杀死之前的金额
@@ -130,5 +130,5 @@ func initDaemon() {
 		d.Run()
 	}
 	//记录pid
-	ioutil.WriteFile(common.RootPath+"/MgHash.sock", []byte(fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())), 0666)
+	ioutil.WriteFile(common.RootPath+"/Project.sock", []byte(fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())), 0666)
 }

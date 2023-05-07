@@ -21,7 +21,7 @@ var stopCmd = &cobra.Command{
 	Use:   "stop",
 	Short: "停止客服http服务",
 	Run: func(cmd *cobra.Command, args []string) {
-		pids, err := ioutil.ReadFile("MgHash.sock")
+		pids, err := ioutil.ReadFile("Project.sock")
 		if err != nil {
 			return
 		}
