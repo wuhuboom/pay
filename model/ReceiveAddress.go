@@ -58,6 +58,8 @@ func (r *ReceiveAddress) CreateUsername(db *gorm.DB, url string) ReceiveAddress 
 	req := make(map[string]interface{})
 	req["user"] = r.Username
 	req["ts"] = time.Now().UnixMilli()
+
+	fmt.Println(url + "/getaddr")
 	resp, err := tools.HttpRequest(url+"/getaddr", req, viper.GetString("eth.ApiKey"))
 	if err != nil {
 		fmt.Println(err.Error())

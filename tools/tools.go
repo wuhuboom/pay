@@ -82,7 +82,7 @@ func ReturnError200(context *gin.Context, msg string) {
 		"msg":    msg,
 	})
 }
-func ReturnError200Data(context *gin.Context, result interface{},msg string) {
+func ReturnError200Data(context *gin.Context, result interface{}, msg string) {
 	context.JSON(http.StatusOK, gin.H{
 		"code":   200,
 		"result": result,
@@ -130,7 +130,7 @@ func ApiSign(data ...[]byte) string {
 	return hashHex
 }
 
-func HttpRequest(url string, params map[string]interface{},apiKey string) ([]byte, error) {
+func HttpRequest(url string, params map[string]interface{}, apiKey string) ([]byte, error) {
 	data, err := json.Marshal(params)
 	if err != nil {
 		return nil, err
@@ -140,6 +140,9 @@ func HttpRequest(url string, params map[string]interface{},apiKey string) ([]byt
 	b64Data := base64.StdEncoding.EncodeToString(data)
 	req["data"] = b64Data
 	req["sign"] = ApiSign([]byte(apiKey), []byte(b64Data), []byte(apiKey))
+
+	fmt.Println(req)
+
 	reqData, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -152,6 +155,7 @@ func HttpRequest(url string, params map[string]interface{},apiKey string) ([]byt
 	httpReq.Header.Add("Accept", "application/json")
 	httpReq.Header.Add("Content-Type", "application/json")
 	res, err := http.DefaultClient.Do(httpReq)
+
 	if err != nil {
 		return nil, err
 	}
@@ -160,9 +164,9 @@ func HttpRequest(url string, params map[string]interface{},apiKey string) ([]byt
 		return nil, errors.New("http status code:" + strconv.FormatInt(int64(res.StatusCode), 10))
 	}
 	body, err := ioutil.ReadAll(res.Body)
+
 	if err != nil {
 		return nil, err
 	}
 	return body, nil
 }
-
