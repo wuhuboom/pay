@@ -24,6 +24,7 @@ func CreatePrepaidPhoneOrders(c *gin.Context) {
 	type T struct {
 		Data string `json:"data"`
 	}
+
 	var jsonDataT T
 	err := c.BindJSON(&jsonDataT)
 	if err != nil {
@@ -78,8 +79,8 @@ func CreatePrepaidPhoneOrders(c *gin.Context) {
 	re := model.ReceiveAddress{}
 	err = mysql.DB.Where("username=?", jsonData.Username).First(&re).Error
 	if err != nil {
-		//用户不存在
-		re.Username = jsonData.Username
+		//用户不存在	re.Username = jsonData.Username
+
 		zap.L().Debug("CreatePrepaidPhoneOrders   用户" + jsonData.Username + " 不存在,创建")
 		re.CreateUsername(mysql.DB, viper.GetString("eth.ThreeUrl"))
 		if re.Address == "" {

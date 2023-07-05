@@ -34,8 +34,8 @@ func GetPayInformationBack(c *gin.Context) {
 		tools.ReturnError101(c, "非法请求")
 		return
 	}
-
 	//fmt.Println(string(sDec))
+	zap.L().Debug("GetPayInformationBack:" + string(sDec))
 	var jsonData GetPayInformationBackData
 	err = json.Unmarshal(sDec, &jsonData)
 	if err != nil {
