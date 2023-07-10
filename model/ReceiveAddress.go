@@ -144,12 +144,21 @@ func CheckTx(db *gorm.DB) {
 		for _, address := range rA {
 			//address.Address = "TCtFtwYAPUg2f5nQ9bzop9vpSPtg67hXpb"
 			url := "https://apilist.tronscanapi.com/api/token_trc20/transfers?limit=20&start=0&sort=-timestamp&count=true&relatedAddress=" + address.Address
-			req, _ := http.NewRequest("GET", url, nil)
+			req, err := http.NewRequest("GET", url, nil)
+			if err != nil {
+				continue
+			}
 			req.Header.Add("accept", "application/json")
-			res, _ := http.DefaultClient.Do(req)
-			body, _ := ioutil.ReadAll(res.Body)
+			res, err := http.DefaultClient.Do(req)
+			if err != nil {
+				continue
+			}
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				continue
+			}
 			var tt1 Ta
-			err := json.Unmarshal(body, &tt1)
+			err = json.Unmarshal(body, &tt1)
 			if err != nil {
 				return
 			}
@@ -200,9 +209,11 @@ func CheckTx(db *gorm.DB) {
 			}
 
 			//获取账户的余额
-
 			url = "https://apilist.tronscanapi.com/api/account/tokens?address=" + address.Address + "&start=0&limit=20&token=&hidden=0&show=0&sortType=0"
-			req, _ = http.NewRequest("GET", url, nil)
+			req, err = http.NewRequest("GET", url, nil)
+			if err != nil {
+				continue
+			}
 			req.Header.Add("accept", "application/json")
 			res, _ = http.DefaultClient.Do(req)
 			body, _ = ioutil.ReadAll(res.Body)
