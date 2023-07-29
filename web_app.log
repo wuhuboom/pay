@@ -1,0 +1,1 @@
+2023-07-29T16:13:13.362+0800	[35mDEBUG[0m	util/util.go:210	回调地址:https://api.rrt.cc/player/pay/callback/1 返回结果:{"code":200,"msg":null,"data":null}

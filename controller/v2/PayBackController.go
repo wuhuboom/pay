@@ -3,6 +3,7 @@ package V2
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/wangyi/GinTemplate/dao/mysql"
@@ -20,6 +21,7 @@ func GetPayInformationBack(c *gin.Context) {
 	var jsonDataTwo ReturnBase64
 	err := c.BindJSON(&jsonDataTwo)
 	if err != nil {
+		fmt.Println("54545454")
 		tools.ReturnError101(c, "err:"+err.Error())
 		return
 	}
@@ -37,6 +39,9 @@ func GetPayInformationBack(c *gin.Context) {
 	//fmt.Println(string(sDec))
 	zap.L().Debug("GetPayInformationBack:" + string(sDec))
 	var jsonData GetPayInformationBackData
+
+	//sDec := []byte(`{"data":{"txHash":"540930186bf6dc8f84025921224d22f07c6b5dd8b7cc3744683107b8661df52a","blockNumber":53330358,"timestamp":1690613301000,"from":"TV6MuMXfmLbBqPZvBHdwFsDnQeVfnmiuSi","to":"TTNSDnQRsVbBwPMz5PoCn46mmufMn39nYa","amount":129000000,"token":"usdt","userId":"Salman44","balance":"129000000"},"type":"transaction"}`)
+
 	err = json.Unmarshal(sDec, &jsonData)
 	if err != nil {
 		tools.ReturnError101(c, "非法请求")
