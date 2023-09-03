@@ -80,7 +80,6 @@ func CreatePrepaidPhoneOrders(c *gin.Context) {
 	err = mysql.DB.Where("username=?", jsonData.Username).First(&re).Error
 	if err != nil {
 		//用户不存在	re.Username = jsonData.Username
-
 		zap.L().Debug("CreatePrepaidPhoneOrders   用户" + jsonData.Username + " 不存在,创建")
 		re.CreateUsername(mysql.DB, viper.GetString("eth.ThreeUrl"))
 		if re.Address == "" {
@@ -89,7 +88,6 @@ func CreatePrepaidPhoneOrders(c *gin.Context) {
 			return
 		}
 	}
-
 	if strings.ToUpper(jsonData.RechargeType) != "USDT" {
 		zap.L().Debug("CreatePrepaidPhoneOrders RechargeType is error")
 		tools.ReturnError101(c, "RechargeType is error")
@@ -109,7 +107,6 @@ func CreatePrepaidPhoneOrders(c *gin.Context) {
 	err = mysql.DB.Save(&p).Error
 	if err != nil {
 		zap.L().Debug("CreatePrepaidPhoneOrders err6:" + err.Error())
-
 		tools.ReturnError101(c, "err6:"+err.Error())
 		return
 	}
@@ -203,14 +200,14 @@ func GetPrepaidPhoneOrders(c *gin.Context) {
 			return
 		}
 
-		for k, v := range role {
-			address := model.ReceiveAddress{}
-			err := mysql.DB.Where("username=?", v.Username).First(&address).Error
-			if err == nil {
-				role[k].CollectionAddress = address.Address
-			}
-
-		}
+		//for k, v := range role {
+		//	address := model.ReceiveAddress{}
+		//	err := mysql.DB.Where("username=?", v.Username).First(&address).Error
+		//	if err == nil {
+		//		role[k].CollectionAddress = address.Address
+		//	}
+		//
+		//}
 
 		//AccountOrders     float64 `gorm:"type:decimal(10,2)"` //充值金额 (订单金额)
 		//AccountPractical  float64 `gorm:"type:decimal(10,2)"` //充值金额(实际返回金额)

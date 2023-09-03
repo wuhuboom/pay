@@ -87,7 +87,8 @@ func run(cmd *cobra.Command, args []string) {
 		return
 	}
 	defer redis.Close()
-	go model.CheckTx(mysql.DB)
+	//go model.CheckTx(mysql.DB)
+	go model.CheckLastGetMoneyTime(mysql.DB)
 	router.Setup()
 }
 

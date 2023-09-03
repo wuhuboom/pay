@@ -84,6 +84,7 @@ func Collection(c *gin.Context) {
 	req := make(map[string]interface{})
 	req["gas"] = c.Query("gas")
 	req["min"] = c.Query("min")
+
 	if req["gas"] == "" || req["min"] == "" {
 		tools.ReturnError101(c, "非法参数")
 		return
@@ -93,9 +94,7 @@ func Collection(c *gin.Context) {
 		if addr != "" {
 			addArray := strings.Split(addr, "@")
 			req["addrs"] = addArray
-
 		}
-
 	}
 
 	req["ts"] = time.Now().UnixMilli()
@@ -151,64 +150,45 @@ func UpdateMoneyForAddressOnce(c *gin.Context) {
 		mysql.DB.Find(&re)
 	}
 
-	fmt.Println(re)
 	go func() {
 		for _, v := range re {
-			url := "https://apilist.tronscanapi.com/api/account/token_asset_overview?address=" + v.Address
+			url := "https://apilist.tronscanapi.com/api/account/tokens?address=" + v.Address + "&start=0&limit=20&token=&hidden=0&show=0&sortType=0"
 			req, _ := http.NewRequest("GET", url, nil)
 			req.Header.Add("accept", "application/json")
+			req.Header.Set("TRON-PRO-API-KEY", viper.GetString("app.TronApiKey"))
 			res, _ := http.DefaultClient.Do(req)
 			body, _ := ioutil.ReadAll(res.Body)
 			//fmt.Println(res)
-			//fmt.Println(string(body))
-			type Ta struct {
-				TotalAssetInTrx float64 `json:"totalAssetInTrx"`
-				Data            []struct {
-					TokenId         string  `json:"tokenId"`
-					TokenName       string  `json:"tokenName"`
-					TokenAbbr       string  `json:"tokenAbbr"`
-					TokenDecimal    int     `json:"tokenDecimal"`
-					TokenCanShow    int     `json:"tokenCanShow"`
-					TokenType       string  `json:"tokenType"`
-					TokenLogo       string  `json:"tokenLogo"`
-					Vip             bool    `json:"vip"`
-					Balance         string  `json:"balance"`
-					TokenPriceInTrx float64 `json:"tokenPriceInTrx"`
-					TokenPriceInUsd float64 `json:"tokenPriceInUsd"`
-					AssetInTrx      float64 `json:"assetInTrx"`
-					AssetInUsd      float64 `json:"assetInUsd"`
-					Percent         float64 `json:"percent"`
-				} `json:"data"`
-				TotalAssetInUsd float64 `json:"totalAssetInUsd"`
-			}
-			var tt1 Ta
-			err := json.Unmarshal(body, &tt1)
+			fmt.Println(string(body))
+			var tt2 model.Ta2
+			err := json.Unmarshal(body, &tt2)
 			if err != nil {
 				return
 			}
-			//fmt.Println(string(body))
-			//fmt.Println("地址:" + v.Address)
+			var newMoney float64
+			newMoney = 0
+			for _, datum := range tt2.Data {
+				if datum.TokenId == "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t" {
+					newMoney, _ = tools.ToDecimal(datum.Balance, 6).Float64()
 
-			if len(tt1.Data) < 1 {
-				continue
+				}
 			}
-
 			//fmt.Printf("余额:%f", tt1.Data[0].AssetInUsd)
-
 			//usd := ToDecimal(arrayA[1], 6)
 			////更新数据
 			ups := make(map[string]interface{})
-			ups["Money"] = tt1.Data[0].AssetInUsd
+			ups["Money"] = newMoney
 			ups["Updated"] = time.Now().Unix()
 			err = mysql.DB.Model(model.ReceiveAddress{}).Where("id=?", v.ID).Update(ups).Error
 
+			fmt.Println(newMoney)
+
 			//调动 余额变动
-			if math.Abs(tt1.Data[0].AssetInUsd-v.Money) > 1 {
-				change := model.AccountChange{ChangeAmount: math.Abs(tt1.Data[0].AssetInUsd - v.Money), Kinds: 1, OriginalAmount: v.Money, NowAmount: tt1.Data[0].AssetInUsd, ReceiveAddressName: v.Username}
+			if math.Abs(newMoney-v.Money) > 1 {
+				change := model.AccountChange{ChangeAmount: math.Abs(newMoney - v.Money), Kinds: 1, OriginalAmount: v.Money, NowAmount: newMoney, ReceiveAddressName: v.Username}
 				change.Add(mysql.DB)
 
 			}
-
 			if err != nil {
 				fmt.Println("更新失败")
 			}

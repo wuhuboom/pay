@@ -16,7 +16,7 @@ type PayOrder struct {
 	Amount      float64 `gorm:"type:decimal(10,2)"` //金额
 	Token       string  //token
 	UserID      string  //用户id
-	IfMyself    int     `gorm:"type:default:1"` //1  三方回调的  2自己插入的.
+	IfMyself    int     `gorm:"default:1"` //1  三方回调的  2自己插入的.
 	Created     int64
 	Date        string
 }

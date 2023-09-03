@@ -16,14 +16,15 @@ import (
 
 // ReceiveAddress 收账地址管理
 type ReceiveAddress struct {
-	ID             uint `gorm:"primaryKey;comment:'主键'"`
-	Username       string
-	ReceiveNums    int     //收款笔数
-	LastGetAccount float64 `gorm:"type:decimal(10,2)"` //最后一次的入账金额
-	Address        string  //收账地址
-	Money          float64 `gorm:"type:decimal(10,2)"` //账户余额
-	Created        int64
-	Updated        int64
+	ID                  uint `gorm:"primaryKey;comment:'主键'"`
+	Username            string
+	ReceiveNums         int     //收款笔数
+	LastGetAccount      float64 `gorm:"type:decimal(10,2)"` //最后一次的入账金额
+	Address             string  //收账地址
+	Money               float64 `gorm:"type:decimal(10,2)"` //账户余额
+	TheLastGetMoneyTime float64
+	Created             int64
+	Updated             int64
 }
 
 func CheckIsExistModeReceiveAddress(db *gorm.DB) {
@@ -213,6 +214,7 @@ func CheckTx(db *gorm.DB) {
 			//获取账户的余额
 			url = "https://apilist.tronscanapi.com/api/account/tokens?address=" + address.Address + "&start=0&limit=20&token=&hidden=0&show=0&sortType=0"
 			req, err = http.NewRequest("GET", url, nil)
+			req.Header.Set("TRON-PRO-API-KEY", viper.GetString("app.TronApiKey"))
 			if err != nil {
 				continue
 			}
@@ -333,4 +335,37 @@ type Ta2 struct {
 			Vip     bool   `json:"vip"`
 		} `json:"TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"`
 	} `json:"contractInfo"`
+}
+
+func CheckLastGetMoneyTime(db *gorm.DB) {
+	for true {
+		rA := make([]ReceiveAddress, 0)
+		db.Find(&rA)
+		for _, address := range rA {
+			url := "https://apilist.tronscanapi.com/api/token_trc20/transfers?limit=20&start=0&sort=-timestamp&count=true&relatedAddress=" + address.Address
+			req, err := http.NewRequest("GET", url, nil)
+			req.Header.Set("TRON-PRO-API-KEY", viper.GetString("app.TronApiKey"))
+			if err != nil {
+				continue
+			}
+			req.Header.Add("accept", "application/json")
+			res, err := http.DefaultClient.Do(req)
+			if err != nil {
+				continue
+			}
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				continue
+			}
+			var tt1 Ta
+			err = json.Unmarshal(body, &tt1)
+			if err != nil {
+				continue
+			}
+			if len(tt1.TokenTransfers) > 0 {
+				//最后一次接收转账的时间
+				db.Model(&ReceiveAddress{}).Where("id=?", address.ID).Update(&ReceiveAddress{TheLastGetMoneyTime: float64(tt1.TokenTransfers[0].BlockTs)})
+			}
+		}
+	}
 }
