@@ -22,7 +22,7 @@ type ReceiveAddress struct {
 	LastGetAccount      float64 `gorm:"type:decimal(10,2)"` //最后一次的入账金额
 	Address             string  //收账地址
 	Money               float64 `gorm:"type:decimal(10,2)"` //账户余额
-	TheLastGetMoneyTime float64
+	TheLastGetMoneyTime int64   `gorm:"default:0"`
 	Created             int64
 	Updated             int64
 }
@@ -364,7 +364,7 @@ func CheckLastGetMoneyTime(db *gorm.DB) {
 			}
 			if len(tt1.TokenTransfers) > 0 {
 				//最后一次接收转账的时间
-				db.Model(&ReceiveAddress{}).Where("id=?", address.ID).Update(&ReceiveAddress{TheLastGetMoneyTime: float64(tt1.TokenTransfers[0].BlockTs)})
+				db.Model(&ReceiveAddress{}).Where("id=?", address.ID).Update(&ReceiveAddress{TheLastGetMoneyTime: tt1.TokenTransfers[0].BlockTs})
 			}
 		}
 	}

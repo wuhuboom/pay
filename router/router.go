@@ -134,6 +134,8 @@ func Setup() *gin.Engine {
 		GroupV2.GET("/getAccountChange", v2.GetAccountChange)
 		//获取整个账户的张变  GetBalanceChange
 		GroupV2.GET("/getBalanceChange", v2.GetBalanceChange)
+		//获取多少天未进账的地址  GetAddressForLastTimeGetMoney
+		GroupV2.GET("/getAddressForLastTimeGetMoney", v2.GetAddressForLastTimeGetMoney)
 
 	}
 
