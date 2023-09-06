@@ -200,14 +200,14 @@ func GetPrepaidPhoneOrders(c *gin.Context) {
 			return
 		}
 
-		//for k, v := range role {
-		//	address := model.ReceiveAddress{}
-		//	err := mysql.DB.Where("username=?", v.Username).First(&address).Error
-		//	if err == nil {
-		//		role[k].CollectionAddress = address.Address
-		//	}
-		//
-		//}
+		for k, v := range role {
+			address := model.ReceiveAddress{}
+			err := mysql.DB.Where("username=?", v.Username).First(&address).Error
+			if err == nil {
+				role[k].CollectionAddress = address.Address
+			}
+
+		}
 
 		//AccountOrders     float64 `gorm:"type:decimal(10,2)"` //充值金额 (订单金额)
 		//AccountPractical  float64 `gorm:"type:decimal(10,2)"` //充值金额(实际返回金额)

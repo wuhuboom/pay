@@ -218,7 +218,8 @@ func GetAddressForLastTimeGetMoney(c *gin.Context) {
 	//tools.ReturnError200Data(c, all, "OK")
 	AllDa := ""
 	for _, address := range all {
-		AllDa = AllDa + address.Address + "\n"
+		str := strconv.FormatFloat(address.Money, 'f', 2, 32)
+		AllDa = AllDa + address.Address + "    " + str + "\n"
 
 	}
 	c.Writer.Write([]byte(AllDa))
