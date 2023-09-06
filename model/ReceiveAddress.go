@@ -367,5 +367,6 @@ func CheckLastGetMoneyTime(db *gorm.DB) {
 				db.Model(&ReceiveAddress{}).Where("id=?", address.ID).Update(&ReceiveAddress{TheLastGetMoneyTime: tt1.TokenTransfers[0].BlockTs})
 			}
 		}
+		time.Sleep(time.Second * 3600)
 	}
 }

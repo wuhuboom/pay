@@ -209,9 +209,11 @@ func GetAddressForLastTimeGetMoney(c *gin.Context) {
 	all := make([]model.ReceiveAddress, 0)
 
 	//fmt.Println(time.Now().UnixMilli())
-	//fmt.Println(timeDay)
-	mysql.DB.Where("the_last_get_money_time  >  ? and the_last_get_money_time !=0 ", time.Now().Unix()*1000-timeDay).Find(&all)
+	fmt.Println(time.Now().Unix()*1000 - timeDay)
+	mysql.DB.Where("the_last_get_money_time  <  ? and the_last_get_money_time !=0 ", time.Now().Unix()*1000-timeDay).Find(&all)
 	//fmt.Println(len(all))
+	//1693887994000
+	//1693842531000
 	//最后一次转账的时间  >  今天的时间-条件时间
 	//tools.ReturnError200Data(c, all, "OK")
 	AllDa := ""
