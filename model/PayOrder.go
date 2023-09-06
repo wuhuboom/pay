@@ -16,7 +16,6 @@ type PayOrder struct {
 	Amount      float64 `gorm:"type:decimal(10,2)"` //金额
 	Token       string  //token
 	UserID      string  //用户id
-	IfMyself    int     `gorm:"default:1"` //1  三方回调的  2自己插入的.
 	Created     int64
 	Date        string
 }
@@ -36,7 +35,7 @@ func CheckIsExistModePayOrder(db *gorm.DB) {
 
 // IfIsExitsThisData 判断数据是否存在
 func (p *PayOrder) IfIsExitsThisData(db *gorm.DB) bool {
-	err := db.Where("tx_hash=? and if_myself=1", p.TxHash).First(&PayOrder{}).Error
+	err := db.Where("tx_hash=?", p.TxHash).First(&PayOrder{}).Error
 	if err != nil {
 		return false
 	}

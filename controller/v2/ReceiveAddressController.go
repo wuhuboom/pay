@@ -156,6 +156,7 @@ func UpdateMoneyForAddressOnce(c *gin.Context) {
 			req, _ := http.NewRequest("GET", url, nil)
 			req.Header.Add("accept", "application/json")
 			req.Header.Set("TRON-PRO-API-KEY", viper.GetString("app.TronApiKey"))
+
 			res, _ := http.DefaultClient.Do(req)
 			body, _ := ioutil.ReadAll(res.Body)
 			//fmt.Println(res)
@@ -200,29 +201,4 @@ func UpdateMoneyForAddressOnce(c *gin.Context) {
 
 	tools.ReturnError200(c, "执行成功")
 	return
-}
-
-// GetAddressForLastTimeGetMoney 获取回去有多少钱没有进账的地址
-func GetAddressForLastTimeGetMoney(c *gin.Context) {
-	day, _ := strconv.ParseInt(c.Query("day"), 10, 64)
-	timeDay := day * 86400000
-	all := make([]model.ReceiveAddress, 0)
-
-	//fmt.Println(time.Now().UnixMilli())
-	fmt.Println(time.Now().Unix()*1000 - timeDay)
-	mysql.DB.Where("the_last_get_money_time  <  ? and the_last_get_money_time !=0 ", time.Now().Unix()*1000-timeDay).Find(&all)
-	//fmt.Println(len(all))
-	//1693887994000
-	//1693842531000
-	//最后一次转账的时间  >  今天的时间-条件时间
-	//tools.ReturnError200Data(c, all, "OK")
-	AllDa := ""
-	for _, address := range all {
-		str := strconv.FormatFloat(address.Money, 'f', 2, 32)
-		AllDa = AllDa + address.Address + "    " + str + "\n"
-
-	}
-	c.Writer.Write([]byte(AllDa))
-	return
-
 }
