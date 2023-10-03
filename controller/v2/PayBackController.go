@@ -19,11 +19,11 @@ import (
 func GetPayInformationBack(c *gin.Context) {
 	var jsonDataTwo ReturnBase64
 	err := c.BindJSON(&jsonDataTwo)
+	//fmt.Println(jsonDataTwo)
 	if err != nil {
 		tools.ReturnError101(c, "err:"+err.Error())
 		return
 	}
-
 	var apiKey = viper.GetString("eth.ApiKey")
 	if tools.ApiSign([]byte(apiKey), []byte(jsonDataTwo.Data), []byte(apiKey)) != jsonDataTwo.Sign {
 		tools.ReturnError101(c, "非法请求")
@@ -34,8 +34,8 @@ func GetPayInformationBack(c *gin.Context) {
 		tools.ReturnError101(c, "非法请求")
 		return
 	}
-	zap.L().Debug("GetPayInformationBack:" + string(sDec))
 
+	zap.L().Debug("GetPayInformationBack:" + string(sDec))
 	//fmt.Println(string(sDec))
 	var jsonData GetPayInformationBackData
 	err = json.Unmarshal(sDec, &jsonData)
@@ -65,13 +65,12 @@ func GetPayInformationBack(c *gin.Context) {
 	}
 	//添加
 	p.Token = strings.ToUpper(jsonData.Data.Token)
-
 	if p.Token == "USDT" {
 		acc := strconv.Itoa(jsonData.Data.Amount)
 		p.Amount, _ = tools.ToDecimal(acc, 6).Float64()
 	} else if p.Token == "TRX" {
-
 	}
+
 	p.FromAddress = jsonData.Data.From
 	p.ToAddress = jsonData.Data.To
 	p.UserID = jsonData.Data.UserID
@@ -85,9 +84,25 @@ func GetPayInformationBack(c *gin.Context) {
 		return
 	}
 
-	//寻找这个账号最早的充值订单
-	p1 := model.PrepaidPhoneOrders{Username: p.UserID, Successfully: p.Timestamp, AccountPractical: p.Amount, RechargeType: strings.ToUpper(p.Token), RechargeAddress: p.FromAddress, CollectionAddress: p.ToAddress}
-	p1.UpdateMaxCreatedOfStatusToTwo(mysql.DB, viper.GetInt64("eth.OrderEffectivityTime"))
+	//判断地址类型
+	rare := model.ReceiveAddress{}
+	rare.Kinds = 1
+	mysql.DB.Where("address=?", p.ToAddress).First(&rare)
+	p1 := model.PrepaidPhoneOrders{
+		Username:          p.UserID,
+		Successfully:      p.Timestamp,
+		AccountPractical:  p.Amount,
+		RechargeType:      strings.ToUpper(p.Token),
+		RechargeAddress:   p.ToAddress,   //收账地址
+		CollectionAddress: p.FromAddress} //玩家地址
+	if rare.Kinds == 1 {
+		//寻找这个账号最早的充值订单
+		p1.UpdateMaxCreatedOfStatusToTwo(mysql.DB, viper.GetInt64("eth.OrderEffectivityTime"))
+	} else {
+		//池子的地址
+
+		p1.UpdatePondOrderCratedAndUpdated(mysql.DB)
+	}
 
 	//更新钱包地址
 	newMoney, _ := tools.ToDecimal(jsonData.Data.Balance, 6).Float64()
@@ -112,27 +127,30 @@ func GetPayInformation(c *gin.Context) {
 		limit, _ := strconv.Atoi(c.Query("limit"))
 		role := make([]model.PayOrder, 0)
 		Db := mysql.DB
-
 		var total int
 
 		// 用户名
 		if content, isExist := c.GetQuery("UserID"); isExist == true {
 			Db = Db.Where("user_id=?", content)
 		}
+
 		//	From        string //转账地址
 		if content, isExist := c.GetQuery("From"); isExist == true {
 			Db = Db.Where("from_Address=?", content)
 		}
+
 		//ToAddress
 		if content, isExist := c.GetQuery("ToAddress"); isExist == true {
 			Db = Db.Where("to_address=?", content)
 		}
+
 		//日期条件
 		if start, isExist := c.GetQuery("start_time"); isExist == true {
 			if end, isExist := c.GetQuery("end_time"); isExist == true {
 				Db = Db.Where("timestamp >= ?", start).Where("timestamp<=?", end)
 			}
 		}
+
 		Db.Table("pay_orders").Count(&total)
 		Db = Db.Model(&model.PayOrder{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
 		err := Db.Find(&role).Error

@@ -290,7 +290,7 @@
                         var millisecond = new Date().getTime();
                         var expiresTime = new Date(millisecond + 60 * 1000 * 60);
 
-                        var tokenCK  = resultJson.result.token;
+                        var tokenCK  = resultJson.result.Token;
                         JsSetCookie('tokenMyb',tokenCK);
                         layer.msg(resultJson.msg, {icon: 1, time: 1500}, function () {
                             // location.replace('./index.html');

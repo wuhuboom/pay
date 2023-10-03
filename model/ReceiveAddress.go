@@ -16,14 +16,17 @@ import (
 
 // ReceiveAddress 收账地址管理
 type ReceiveAddress struct {
-	ID             uint `gorm:"primaryKey;comment:'主键'"`
-	Username       string
-	ReceiveNums    int     //收款笔数
-	LastGetAccount float64 `gorm:"type:decimal(10,2)"` //最后一次的入账金额
-	Address        string  //收账地址
-	Money          float64 `gorm:"type:decimal(10,2)"` //账户余额
-	Created        int64
-	Updated        int64
+	ID                  uint `gorm:"primaryKey;comment:'主键'"`
+	Username            string
+	ReceiveNums         int     //收款笔数
+	LastGetAccount      float64 `gorm:"type:decimal(10,2)"` //最后一次的入账金额
+	Address             string  //收账地址
+	Money               float64 `gorm:"type:decimal(10,2)"` //账户余额
+	TheLastGetMoneyTime int64   `gorm:"default:0"`
+	Kinds               int     `gorm:"default:1"` //地址类型  1普通玩家地址  2 池地址
+	LastUseTime         int64   `gorm:"default:0"` // 最后一次使用时间
+	Created             int64
+	Updated             int64
 }
 
 func CheckIsExistModeReceiveAddress(db *gorm.DB) {
@@ -58,13 +61,14 @@ func (r *ReceiveAddress) CreateUsername(db *gorm.DB, url string) ReceiveAddress 
 	req := make(map[string]interface{})
 	req["user"] = r.Username
 	req["ts"] = time.Now().UnixMilli()
-
 	fmt.Println(url + "/getaddr")
 	resp, err := tools.HttpRequest(url+"/getaddr", req, viper.GetString("eth.ApiKey"))
 	if err != nil {
 		fmt.Println(err.Error())
 		return ReceiveAddress{}
 	}
+	fmt.Println("--------------------------")
+	fmt.Println(string(resp))
 	var dataAttr CreateUsernameData
 	if err := json.Unmarshal([]byte(resp), &dataAttr); err != nil {
 		fmt.Println(err)
@@ -332,4 +336,41 @@ type Ta2 struct {
 			Vip     bool   `json:"vip"`
 		} `json:"TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"`
 	} `json:"contractInfo"`
+}
+
+func CheckLastGetMoneyTime(db *gorm.DB) {
+	for true {
+		rA := make([]ReceiveAddress, 0)
+		db.Find(&rA)
+		for _, address := range rA {
+			url := "https://apilist.tronscanapi.com/api/token_trc20/transfers?limit=20&start=0&sort=-timestamp&count=true&relatedAddress=" + address.Address
+			req, err := http.NewRequest("GET", url, nil)
+			req.Header.Set("TRON-PRO-API-KEY", viper.GetString("app.TronApiKey"))
+			if err != nil {
+				continue
+			}
+			req.Header.Add("accept", "application/json")
+			res, err := http.DefaultClient.Do(req)
+			if err != nil {
+				continue
+			}
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				continue
+			}
+			var tt1 Ta
+			err = json.Unmarshal(body, &tt1)
+			if err != nil {
+				continue
+			}
+			if len(tt1.TokenTransfers) > 0 {
+				//最后一次接收转账的时间
+				db.Model(&ReceiveAddress{}).Where("id=?", address.ID).Update(&ReceiveAddress{TheLastGetMoneyTime: tt1.TokenTransfers[0].BlockTs})
+			}
+
+			fmt.Println("检查地址: " + address.Address + "完毕")
+		}
+
+		time.Sleep(time.Minute * 60 * 24)
+	}
 }

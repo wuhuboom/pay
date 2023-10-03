@@ -20,8 +20,15 @@ global_requestAddressJs_getAccountChange = global_requestAddress+ "/v2/getAccoun
 
 global_requestAddressJs_getBalanceChange = global_requestAddress+ "/v2/getBalanceChange";
 
+global_requestAddressJs_getConfig = global_requestAddress+ "/v2/getConfig";
+
+global_requestAddressJs_setConfig = global_requestAddress+ "/v2/setConfig";
 
 var getRootPath_webStr = getRootPath_web();
+
+
+
+var currTimeZoneValue = 5
 
 //获取目录路径方法
 function getRootPath_web() {

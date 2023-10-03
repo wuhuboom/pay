@@ -1,1 +1,260 @@
 2023-07-29T16:13:13.362+0800	[35mDEBUG[0m	util/util.go:210	回调地址:https://api.rrt.cc/player/pay/callback/1 返回结果:{"code":200,"msg":null,"data":null}
+2023-09-10T17:45:49.477+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:60	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-09-10T17:45:49.483+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:66	CreatePrepaidPhoneOrders   用户Okkd 不存在,创建
+2023-09-10T17:45:51.625+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:73	CreatePrepaidPhoneOrders   用户Okkd 返回空的地址,稍后重试
+2023-09-10T17:54:58.567+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:60	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-09-10T17:54:58.571+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:66	CreatePrepaidPhoneOrders   用户Okkd 不存在,创建
+2023-09-10T17:55:09.088+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:60	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-09-10T17:55:09.102+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:92	CreatePrepaidPhoneOrders 不要重复提交
+2023-09-10T17:55:09.790+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:60	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-09-10T17:55:09.798+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:92	CreatePrepaidPhoneOrders 不要重复提交
+2023-09-10T18:11:00.241+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:60	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-09-10T18:11:00.249+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:92	CreatePrepaidPhoneOrders 不要重复提交
+2023-09-10T18:11:00.906+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:60	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-09-10T18:11:00.913+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:92	CreatePrepaidPhoneOrders 不要重复提交
+2023-09-10T18:11:01.413+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:60	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-09-10T18:11:01.420+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:92	CreatePrepaidPhoneOrders 不要重复提交
+2023-09-10T18:49:36.916+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:60	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-09-10T18:49:36.917+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:66	CreatePrepaidPhoneOrders   用户Okkd 不存在,创建
+2023-09-10T18:58:25.158+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T18:58:28.983+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T18:58:29.635+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T18:58:30.130+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T19:00:24.986+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T19:00:26.917+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T19:01:04.672+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:38:23.718+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:38:27.779+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:38:43.682+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:44:11.864+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:44:11.868+0800	[35mDEBUG[0m	util/util.go:202	回调地址:错误:Post "": unsupported protocol scheme ""
+2023-09-10T20:51:11.688+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:51:24.130+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:51:24.141+0800	[35mDEBUG[0m	util/util.go:202	回调地址:错误:Post "": unsupported protocol scheme ""
+2023-09-10T20:52:24.502+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:52:26.652+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:52:37.705+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:52:37.720+0800	[35mDEBUG[0m	util/util.go:202	回调地址:错误:Post "": unsupported protocol scheme ""
+2023-09-10T20:56:28.447+0800	[35mDEBUG[0m	v2/PayBackController.go:53	GetPayInformationBack:{
+    "data": {
+        "txHash": "72ca856e8c20da4d4210a1846c6d796f4dca9680837063a94d467030474bb6cf",
+        "blockNumber": 54540184,
+        "timestamp": 1694251008000,
+        "from": "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G",
+        "to": "TD2roX6yZir5DPSMbNtbJqZJA79WH9iybD",
+        "amount": 32000000,
+        "token": "usdt",
+        "userId": "Afroz",
+        "balance": "32000000"
+    },
+    "type": "transaction"
+}
+2023-09-10T20:56:28.459+0800	[35mDEBUG[0m	util/util.go:202	回调地址:错误:Post "": unsupported protocol scheme ""

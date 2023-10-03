@@ -7,6 +7,7 @@
     <title>账单</title>
     <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
     <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script src="../../assets/js/moment.js"></script>
 
     <style>
 
@@ -223,6 +224,9 @@
             var insTb = table.render({
                 elem: '#userTable',
                 url: global_requestAddressJs_getPrepaidPhoneOrders+"?action=GET",
+                headers:{
+                    "token": mybck,
+                },
                 // method: 'post',
                 // where:log_login_request_param,
                 // toolbar: ['<p>',
@@ -239,9 +243,9 @@
                     ,first: "首页" //不显示首页
                     ,last: "尾页"//不显示尾页
                 },
-                height : "full-100",
+                height : "full-150",
                 limit : 15,
-                limits : [15,30,50,100,500],
+                limits: [15, 30, 50, 100,500,2000],
                 // id : "systemLog",
                 cols: [[
                     {type: "checkbox", width: 50},
@@ -275,12 +279,14 @@
                     },
                     {
                         field: 'Successfully', width: 200, title: '区块时间', sort: true, align: "center", templet: function (d) {
-                            return util.toDateString(d.Timestamp* 1000);
+                            // return util.toDateString(d.Timestamp* 1000);
+                            return moment(d.Timestamp * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                         }, sort: true
                     },
                     {
                         field: 'Created', width: 200, title: '入库时间',align:"center", templet: function (d) {
-                            return util.toDateString(d.Created* 1000);
+                            // return util.toDateString(d.Created* 1000);
+                            return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                         }, sort: true
                     },
                     // {

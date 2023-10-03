@@ -82,7 +82,7 @@ func ReturnError200(context *gin.Context, msg string) {
 		"msg":    msg,
 	})
 }
-func ReturnError200Data(context *gin.Context, result interface{},msg string) {
+func ReturnError200Data(context *gin.Context, result interface{}, msg string) {
 	context.JSON(http.StatusOK, gin.H{
 		"code":   200,
 		"result": result,
@@ -130,7 +130,7 @@ func ApiSign(data ...[]byte) string {
 	return hashHex
 }
 
-func HttpRequest(url string, params map[string]interface{},apiKey string) ([]byte, error) {
+func HttpRequest(url string, params map[string]interface{}, apiKey string) ([]byte, error) {
 	data, err := json.Marshal(params)
 	if err != nil {
 		return nil, err
@@ -166,3 +166,21 @@ func HttpRequest(url string, params map[string]interface{},apiKey string) ([]byt
 	return body, nil
 }
 
+// IsArray 判断数组是否存在
+func IsArray(array []string, arr string) bool {
+	for _, s := range array {
+		if s == arr {
+			return true
+		}
+	}
+	return false
+}
+
+// JsonWrite json返回
+func JsonWrite(context *gin.Context, status int, result interface{}, msg string) {
+	context.JSON(http.StatusOK, gin.H{
+		"code":   status,
+		"result": result,
+		"msg":    msg,
+	})
+}

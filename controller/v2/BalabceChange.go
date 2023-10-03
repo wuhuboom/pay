@@ -17,14 +17,12 @@ func GetBalanceChange(c *gin.Context) {
 		role := make([]model.BalanceChange, 0)
 		Db := mysql.DB
 		var total int
-
 		//时间查询
 		if created, isE := c.GetQuery("start_time"); isE == true {
 			if end, isE := c.GetQuery("end_time"); isE == true {
 				Db = Db.Where("created  >= ?", created).Where("created <=  ?", end)
 			}
 		}
-
 		Db.Table("balance_changes").Count(&total)
 		Db = Db.Model(&model.BalanceChange{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
 		err := Db.Find(&role).Error

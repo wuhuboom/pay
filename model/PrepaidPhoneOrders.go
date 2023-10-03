@@ -30,6 +30,7 @@ type PrepaidPhoneOrders struct {
 	Successfully      int64   //交易成功 时间(区块时间戳)
 	Date              string
 	BackUrl           string //回调的地址
+	Remark            string //备注
 }
 
 func CheckIsExistModePrepaidPhoneOrders(db *gorm.DB) {
@@ -80,27 +81,30 @@ func (p *PrepaidPhoneOrders) CreatePrepaidPhoneOrders(db *gorm.DB) (bool, error)
 
 // UpdateMaxCreatedOfStatusToTwo 寻找一条最新传建的订单并且修改他的状态
 func (p *PrepaidPhoneOrders) UpdateMaxCreatedOfStatusToTwo(db *gorm.DB, OrderEffectivityTime int64) bool {
+	type Create struct {
+		PlatformOrder    string
+		RechargeAddress  string
+		Username         string
+		AccountOrders    float64 //订单充值金额
+		AccountPractical float64 //  实际充值的金额
+		RechargeType     string
+		BackUrl          string
+	}
 	//找到这条数据
 	pp := PrepaidPhoneOrders{}
-	err := db.Where("username=?", p.Username).Where("status= ? and recharge_type= ?", 1,p.RechargeType).Last(&pp).Error
+	err := db.Where("username=?", p.Username).Where("status= ? and recharge_type= ?", 1, p.RechargeType).Last(&pp).Error
 	if err == nil {
 		if time.Now().Unix()-pp.Created <= OrderEffectivityTime {
 			//找到最新的数据(并且在有效时间累)
 			db.Model(&PrepaidPhoneOrders{}).Where("id=?", pp.ID).Update(
-				&PrepaidPhoneOrders{Updated: time.Now().Unix(), Successfully: p.Successfully, ThreeBack: 2, Status: 2, AccountPractical: p.AccountPractical})
-
+				&PrepaidPhoneOrders{
+					Updated:          time.Now().Unix(),
+					Successfully:     p.Successfully,
+					ThreeBack:        2,
+					Status:           2,
+					AccountPractical: p.AccountPractical, CollectionAddress: p.CollectionAddress})
 			//这里 要回调给前台
 			if pp.BackUrl != "" {
-				type Create struct {
-					PlatformOrder    string
-					RechargeAddress  string
-					Username         string
-					AccountOrders    float64 //订单充值金额
-					AccountPractical float64 //  实际充值的金额
-					RechargeType     string
-					BackUrl          string
-				}
-
 				var tt Create
 				tt.PlatformOrder = pp.PlatformOrder
 				tt.RechargeAddress = p.RechargeAddress
@@ -108,24 +112,20 @@ func (p *PrepaidPhoneOrders) UpdateMaxCreatedOfStatusToTwo(db *gorm.DB, OrderEff
 				tt.AccountOrders = pp.AccountOrders
 				tt.AccountPractical = p.AccountPractical
 				tt.RechargeType = p.RechargeType
-
-
 				data, err := json.Marshal(tt)
 				if err != nil {
 					return false
 				}
-				data, err= util.RsaEncryptForEveryOne(data)
-
+				data, err = util.RsaEncryptForEveryOne(data)
 				util.BackUrlToPay(pp.BackUrl, base64.StdEncoding.EncodeToString(data))
 			}
-
 			return true
 		} else {
 			db.Model(&PrepaidPhoneOrders{}).Where("id=?", pp.ID).Update(&PrepaidPhoneOrders{Status: 3})
 			return false
 		}
-
 	}
+
 	//没有这条数据  默认是线下支付   自行创建这笔订单 Username: p.UserID, Successfully: p.Timestamp, AccountPractical: p.Amount}
 	pt := PrepaidPhoneOrders{}
 	pt.Created = time.Now().Unix()
@@ -133,7 +133,7 @@ func (p *PrepaidPhoneOrders) UpdateMaxCreatedOfStatusToTwo(db *gorm.DB, OrderEff
 	pt.ThreeOrder = time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(100000))
 	pt.PlatformOrder = ""
 	pt.Status = 2
-	pt.ThreeBack = 3
+	pt.ThreeBack = 2
 	pt.Username = p.Username
 	pt.Successfully = p.Successfully
 	pt.AccountPractical = p.AccountPractical
@@ -144,4 +144,72 @@ func (p *PrepaidPhoneOrders) UpdateMaxCreatedOfStatusToTwo(db *gorm.DB, OrderEff
 	db.Save(&pt)
 	return false
 
+}
+
+// UpdatePondOrderCratedAndUpdated 修改池子的订单
+func (p PrepaidPhoneOrders) UpdatePondOrderCratedAndUpdated(db *gorm.DB) bool {
+	type Create struct {
+		PlatformOrder    string
+		RechargeAddress  string
+		Username         string
+		AccountOrders    float64 //订单充值金额
+		AccountPractical float64 //  实际充值的金额
+		RechargeType     string
+		BackUrl          string
+	}
+	//找到这条数据
+	pp := PrepaidPhoneOrders{}
+	admin := Admin{}
+	admin.Expiration = 30
+	db.Where("id=?", 1).First(&admin)
+	//	创建+过期  > 现在时间
+	err := db.Where("recharge_address=?", p.RechargeAddress).
+		Where("status= ? and recharge_type= ? and created > ?", 1, p.RechargeType, time.Now().Unix()-admin.Expiration*60).
+		First(&pp).Error
+	if err == nil {
+		//找到了这笔订单
+		db.Model(&PrepaidPhoneOrders{}).Where("id=?", pp.ID).Update(
+			&PrepaidPhoneOrders{
+				Updated:          time.Now().Unix(),
+				Successfully:     p.Successfully,
+				ThreeBack:        2,
+				Status:           2,
+				AccountPractical: p.AccountPractical, CollectionAddress: p.CollectionAddress})
+		//这里 要回调给前台
+		if pp.BackUrl != "" {
+			var tt Create
+			tt.PlatformOrder = pp.PlatformOrder
+			tt.RechargeAddress = p.RechargeAddress
+			tt.Username = p.Username
+			tt.AccountOrders = pp.AccountOrders
+			tt.AccountPractical = p.AccountPractical
+			tt.RechargeType = p.RechargeType
+			data, err := json.Marshal(tt)
+			if err != nil {
+				return false
+			}
+			data, err = util.RsaEncryptForEveryOne(data)
+			util.BackUrlToPay(pp.BackUrl, base64.StdEncoding.EncodeToString(data))
+		}
+		return true
+	}
+
+	//没找到这个订单 补这个订单
+	//没有这条数据  默认是线下支付   自行创建这笔订单 Username: p.UserID, Successfully: p.Timestamp, AccountPractical: p.Amount}
+	pt := PrepaidPhoneOrders{}
+	pt.Created = time.Now().Unix()
+	pt.Updated = 0
+	pt.ThreeOrder = time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(100000))
+	pt.PlatformOrder = ""
+	pt.Status = 2
+	pt.ThreeBack = 2
+	pt.Username = p.Username
+	pt.Successfully = p.Successfully
+	pt.AccountPractical = p.AccountPractical
+	pt.RechargeType = p.RechargeType
+	pt.RechargeAddress = p.RechargeAddress
+	pt.CollectionAddress = p.CollectionAddress
+	pt.Date = time.Now().Format("2006-01-02")
+	db.Save(&pt)
+	return true
 }
