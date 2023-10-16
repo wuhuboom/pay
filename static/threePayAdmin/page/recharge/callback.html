@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script src="../../assets/js/moment.js"></script>
+
+    <!-- js部分 -->
+    <script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+    <script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+    <script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="../../assets/js/config.url.js"></script>
+
+</head>
+<body class="childrenBody">
+<form class="layui-form" style="width:80%;margin-top: 20px">
+
+    <div class="layui-form-item layui-row layui-col-xs12">
+        <label class="layui-form-label">交易hash</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input " id="tx_hash" placeholder="请在此输入交易hash">
+        </div>
+    </div>
+    <div class="layui-form-item layui-row layui-col-xs12">
+        <label class="layui-form-label">实际金额</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input " id="actual_amount" placeholder="请在此输入实际金额">
+        </div>
+    </div>
+<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
+<!--        <label class="layui-form-label">备注</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="text" class="layui-input " id="remark" placeholder="请在此输入备注">-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="layui-form-item layui-row layui-col-xs12">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-lg" lay-filter="comfireAdd" id="comfireAdd">确认添加</button>
+            <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>
+        </div>
+    </div>
+</form>
+
+
+<script>
+
+    var mybck = $.cookie('tokenMyb');
+    if (mybck == "" || mybck == null) {
+
+
+        window.top.location.href = "../../login.html";
+
+    } else {
+        var currParentDatas = eval('(' + parent.jsondata + ')')
+
+
+        var uploadFileOBJ
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice','upload'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            // var layer = parent.layer === undefined ? layui.layer : top.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var notice = layui.notice;
+            var upload = layui.upload;
+
+
+
+            //重新渲染 固定写法
+            form.render("select");
+
+
+            //确认按钮点击事件(这个功能已经实现,但是不知道是否接口问题,暂时修改无效)
+            $("#comfireAdd").click(function () {
+                // let formData = {}
+
+                if(!$('#tx_hash').val()){
+                    layer.msg('交易hash不允许为空！', {icon: 2});
+                    return  false
+                }
+
+                if(!$('#actual_amount').val()){
+                    layer.msg('实际金额不允许为空！', {icon: 2});
+                    return  false
+                }
+
+
+                // formData.tx_hash = $('#tx_hash').val()
+                // formData.actual_amount = $('#actual_amount').val()
+                // formData.remark = $('#remark').val()
+
+                $.ajax({
+                    url: global_requestAddressJs_handBackStatus+"?id="+currParentDatas.ID+"&tx_hash="+$('#tx_hash').val()+"&actual_amount="+$('#actual_amount').val(),
+                    headers: {
+                        "token": mybck,
+                    },
+                    // data: formData,
+                    type: "get",
+                    // dataType: "json",
+                    success: function (addResult) {
+
+                        if (addResult.code === 200) {
+                            // layer.msg(addResult.msg);
+                            notice.msg(addResult.msg, {icon: 1});
+                            setTimeout(function () {
+                                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                                parent.layer.close(index);
+                                // window.parent.location.reload();
+                            }, 1300)
+
+                        } else {
+                            notice.msg(addResult.msg, {icon: 2});
+                        }
+
+                    },
+                });
+                // parent.local.reload();
+                return false;
+            })
+
+
+            //添加内容点击事件
+            $("#cancelAdd").click(function () {
+
+                // layer.msg("取消操作");
+                notice.msg('取消操作!', {icon: 5});
+                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                parent.layer.close(index);
+                // window.parent.location.reload();
+
+
+                return false;
+
+            })
+
+        })
+    }
+</script>
+</body>
+</html>

@@ -7,6 +7,7 @@
     <title>账单</title>
     <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
     <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script src="../../assets/js/moment.js"></script>
 
     <style>
 
@@ -232,6 +233,9 @@
 
             $.ajax({
                 url: global_requestAddressJs_getAllMoney,
+                headers:{
+                    token:mybck,
+                },
                 type: "get",
                 dataType: "json",
                 success: function (data) {
@@ -295,6 +299,9 @@
             var insTb = table.render({
                 elem: '#userTable',
                 url: global_requestAddressJs_getReceiveAddress + "?action=GET",
+                headers:{
+                    "token": mybck,
+                },
                 // method: 'post',
                 // where:log_login_request_param,
                 // toolbar: ['<p>',
@@ -313,7 +320,7 @@
                 },
                 height: "full-100",
                 limit: 15,
-                limits: [15, 30, 50, 100,500],
+                limits: [15, 30, 50, 100,500,2000],
                 // id : "systemLog",
                 cols: [[
                     {type: "checkbox", width: 50},
@@ -325,12 +332,14 @@
                     {field: 'LastGetAccount', width: 150, title: '最后一次充值金额', align: "center"},
                     {
                         field: 'Created', width: 200, title: '入库时间', align: "center", templet: function (d) {
-                            return util.toDateString(d.Created * 1000);
+                            // return util.toDateString(d.Created * 1000);
+                            return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                         }, sort: true
                     },
                     {
                         field: 'Updated', width: 200, title: '更新时间', align: "center", templet: function (d) {
-                            return util.toDateString(d.Updated * 1000);
+                            // return util.toDateString(d.Updated * 1000);
+                            return moment(d.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                         }, sort: true
                     },
                     {title: '操作', width:130, templet:'#orderListBar',fixed:"right",align:"center"}
@@ -387,6 +396,7 @@
                 }
 
                 insTb.reload({
+
                     where: {...currTempObj}
                     , page: {curr: 1},
                     done: function () {
@@ -404,6 +414,9 @@
                 $.ajax({
                     url: global_requestAddressJs_updateMoneyForAddressOnce,
                     type: "get",
+                    headers:{
+                        token:mybck,
+                    },
                     dataType: "json",
                     success: function (data) {
                         if (data.code === 200) {
@@ -447,6 +460,9 @@
                 $.ajax({
                     url: global_requestAddressJs_updateMoneyForAddressOnce+"?address="+$("#address").val(),
                     type: "get",
+                    headers:{
+                        token:mybck,
+                    },
                     dataType: "json",
                     success: function (data) {
                         if (data.code === 200) {
@@ -667,6 +683,9 @@
                 $.ajax({
                     url: paramUrl,
                     type: 'GET',
+                    headers:{
+                        token:mybck,
+                    },
                     dataType: "json",
                     success: function (resultJson) {
                         if (resultJson.code === 200) {
@@ -709,6 +728,9 @@
                 $.ajax({
                     url: global_requestAddressJs_getReceiveAddress + "?action=ADD",
                     type: "get",
+                    headers:{
+                        token:mybck,
+                    },
                     dataType: "json",
                     success: function (data) {
                         if (data.code === 200) {
@@ -743,6 +765,9 @@
 
                 $.ajax({
                     url: global_requestAddressJs_getAllMoney,
+                    headers:{
+                        token:mybck,
+                    },
                     type: "get",
                     dataType: "json",
                     success: function (data) {

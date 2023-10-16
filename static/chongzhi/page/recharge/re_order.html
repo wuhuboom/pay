@@ -7,19 +7,20 @@
     <title>账单</title>
     <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
     <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script src="../../assets/js/moment.js"></script>
 
     <style>
 
-        .currSerachBtn{
+        .currSerachBtn {
             box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
         }
 
-        .currReloadBtn{
+        .currReloadBtn {
             box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
         }
 
-        .layui-table-cell{
-            height:36px;
+        .layui-table-cell {
+            height: 36px;
             line-height: 36px;
         }
 
@@ -102,7 +103,8 @@
                         <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit>
                             <i class="layui-icon">&#xe615;</i>搜索
                         </button>
-                        <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
+                        <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit
+                                style="background-color: #926dde;border-color: #926dde;">
                             <i class="layui-icon layui-icon-refresh"></i>刷新数据
                         </button>
                     </div>
@@ -125,9 +127,11 @@
 
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
-    <a class="layui-btn layui-btn-xs " lay-event="rechargebtn"><i class="layui-icon">&#xe605;</i>充值</a>
-    <a class="layui-btn layui-btn-xs " lay-event="changebtn"><i class="layui-icon">&#xe605;</i>修改</a>
-<!--    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delbtn"><i class="layui-icon">&#x1006;</i>删除</a>-->
+    {{# if (d.ThreeBack == "1") { }}
+    <a class="layui-btn layui-btn-sm " lay-event="rechargebtn"><i class="layui-icon">&#xe605;</i>回调</a>
+    {{#} }}
+<!--    <a class="layui-btn layui-btn-xs " lay-event="changebtn"><i class="layui-icon">&#xe605;</i>修改</a>-->
+    <!--    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delbtn"><i class="layui-icon">&#x1006;</i>删除</a>-->
 </script>
 
 <script type="text/html" id="currentThreeBack">
@@ -144,26 +148,27 @@
 
 </script>
 <script type="text/html" id="toolbarDemo">
-<div id="showContent" style="display: none">
-    <blockquote class="layui-elem-quote" style="display: flex;">
-        <div style="color: darkblue">充值金额 (订单金额):<span id="AccountOrders">0</span></div>  <div style="margin-left:10px;color: darkblue">充值金额(实际返回金额):<span id="AccountPractical">0</span></div>
-    </blockquote>
-</div>
+    <div id="showContent" style="display: none">
+        <blockquote class="layui-elem-quote" style="display: flex;">
+            <div style="color: darkblue">充值金额 (订单金额):<span id="AccountOrders">0</span></div>
+            <div style="margin-left:10px;color: darkblue">充值金额(实际返回金额):<span id="AccountPractical">0</span></div>
+        </blockquote>
+    </div>
 </script>
 <script>
 
-    var mybck= $.cookie('tokenMyb');
+    var mybck = $.cookie('tokenMyb');
     //alert(document.cookie);
     //console.log(mybck)
-    if(mybck == "" || mybck == null){
+    if (mybck == "" || mybck == null) {
 
-        window.top.location.href="../../login.html";
+        window.top.location.href = "../../login.html";
 
-    }else{
+    } else {
 
         let currDateVal
         let currDateVal_end
-        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','laydate'], function () {
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'laydate'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
             var form = layui.form;
@@ -174,14 +179,13 @@
             var xmSelect = layui.xmSelect;
 
 
-
             laydate.render({
                 elem: '#startDate'
                 // ,value: currDate
-                ,isInitValue: true
-                ,theme: 'molv'
-                ,type: 'datetime'
-                ,done: function(value, date){//选中后的回调
+                , isInitValue: true
+                , theme: 'molv'
+                , type: 'datetime'
+                , done: function (value, date) {//选中后的回调
                     // layer.alert('你选择的日期是：' + value + '<br>获得的对象是' + JSON.stringify(date));
                     // console.log("自带的",date)
                     // console.log("jquery",$("#buildDate").val())
@@ -195,10 +199,10 @@
             laydate.render({
                 elem: '#endDate'
                 // ,value: currDate
-                ,isInitValue: true
-                ,theme: 'molv'
-                ,type: 'datetime'
-                ,done: function(value, date){//选中后的回调
+                , isInitValue: true
+                , theme: 'molv'
+                , type: 'datetime'
+                , done: function (value, date) {//选中后的回调
                     // layer.alert('你选择的日期是：' + value + '<br>获得的对象是' + JSON.stringify(date));
                     // console.log("自带的",date)
                     // console.log("jquery",$("#buildDate").val())
@@ -210,38 +214,39 @@
             });
 
 
-
             var log_login_request_param = {};
             // log_login_request_param['player_id']= '1';
-            log_login_request_param['token']= $.cookie('tokenMyb');
-            log_login_request_param['kinds']= 1;
-            log_login_request_param['status']= 4;
-
+            log_login_request_param['token'] = $.cookie('tokenMyb');
+            log_login_request_param['kinds'] = 1;
+            log_login_request_param['status'] = 4;
 
 
             /* 渲染表格 */
             var insTb = table.render({
                 elem: '#userTable',
-                url: global_requestAddressJs_getPrepaidPhoneOrders+"?action=GET",
+                url: global_requestAddressJs_getPrepaidPhoneOrders + "?action=GET",
+                headers: {
+                    "token": mybck,
+                },
                 // method: 'post',
                 // where:log_login_request_param,
                 // toolbar: ['<p>',
                 //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
                 //     '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
                 //     '</p>'].join(''),
-                toolbar:  '#toolbarDemo' ,
+                toolbar: '#toolbarDemo',
 
                 cellMinWidth: 100,
-                page :  { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
                     layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
                     //,curr: 5 //设定初始在第 5 页
-                    ,groups: 10 //只显示 1 个连续页码
-                    ,first: "首页" //不显示首页
-                    ,last: "尾页"//不显示尾页
+                    , groups: 10 //只显示 1 个连续页码
+                    , first: "首页" //不显示首页
+                    , last: "尾页"//不显示尾页
                 },
-                height : "full-100",
-                limit : 15,
-                limits : [15,30,50,100,500],
+                height: "full-150",
+                limit: 15,
+                limits: [15, 30, 50, 100, 500, 2000],
                 // id : "systemLog",
                 cols: [[
                     {type: "checkbox", width: 50},
@@ -250,6 +255,7 @@
                     {field: 'ThreeOrder', width: 300, title: '三方平台订单号', sort: true, align: "center"},
                     {field: 'AccountOrders', width: 100, title: '订单充值金额', align: "center"},
                     {field: 'RechargeAddress', title: '充值地址', minWidth: 300, align: "center"},
+                    {field: 'Remark', title: '备注', edit: 'text', sort: true, align: "center"},
                     {field: 'CollectionAddress', width: 300, title: '收账地址', sort: true, align: "center"},
                     {field: 'RechargeType', width: 100, title: '充值类型', sort: true, align: "center"},
                     {field: 'Username', width: 100, title: '用户ID', align: "center"},
@@ -274,13 +280,21 @@
 
                     },
                     {
-                        field: 'Successfully', width: 200, title: '区块时间', sort: true, align: "center", templet: function (d) {
-                            return util.toDateString(d.Timestamp* 1000);
-                        }, sort: true
+                        field: 'Successfully',
+                        width: 200,
+                        title: '区块时间',
+                        sort: true,
+                        align: "center",
+                        templet: function (d) {
+                            // return util.toDateString(d.Timestamp* 1000);
+                            return moment(d.Timestamp * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
+                        },
+                        sort: true
                     },
                     {
-                        field: 'Created', width: 200, title: '入库时间',align:"center", templet: function (d) {
-                            return util.toDateString(d.Created* 1000);
+                        field: 'Created', width: 200, title: '入库时间', align: "center", templet: function (d) {
+                            // return util.toDateString(d.Created* 1000);
+                            return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                         }, sort: true
                     },
                     // {
@@ -288,7 +302,7 @@
                     //         return util.toDateString(d.updated_at* 1000);
                     //     }, sort: true
                     // },
-                    // {title: '操作', width:250, templet:'#orderListBar',fixed:"right",align:"center"}
+                    {title: '操作', width:100, templet:'#orderListBar',fixed:"right",align:"center"}
                 ]],
                 done: function (res, curr, count) {
 
@@ -356,16 +370,16 @@
                 insTb.reload({
                     where: {...currTempObj}
                     , page: {curr: 1},
-                    done:function(res, curr, count){
+                    done: function (res, curr, count) {
                         // console.log("res",res.accountOrders)
                         bet_tb_this = this;
                         // console.log("book_tb_this----重载后的值",bet_tb_this)
 
-                        if(!$("#startDate").val() && !$("#endDate").val()){
+                        if (!$("#startDate").val() && !$("#endDate").val()) {
                             // console.log("进来")
                             $("#showContent").hide()
-                        }else{
-                            $("div").css({"display":""});
+                        } else {
+                            $("div").css({"display": ""});
                             $("#showContent").show()
                         }
 
@@ -378,26 +392,67 @@
                 return false;
             });
 
+            table.on('edit(userTable)', function (obj) {
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+
+                // console.log("field",field)
+                var param = {};
+                param['id'] = data.ID;
+                // param['bank_information_id'] = data.BankInformationId;
+
+                if (field === "Remark") {
+                    // param['remark'] = util.escape(value);
+                    if (!util.escape(value)) {
+                        layer.msg("不能爲空")
+                        return false;
+                    }
+
+                }
+
+                // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改值为：'+ util.escape(value));
+                $.ajax({
+                    // url: global_requestAddressJs_getPrepaidPhoneOrders+"?action=update",
+                    url: global_requestAddressJs_getPrepaidPhoneOrders + "?action=UPDATED" + "&id=" + data.ID + "&remark=" + util.escape(value),
+                    // data: param,
+                    headers: {
+                        token: mybck
+                    },
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.code === 200) {
+                            layer.msg("修改成功")
+                        } else {
+                            layer.msg("修改失敗")
+                        }
+                    },
+                });
+                return false;
+            });
+
             /* 表格工具条点击事件 */
             table.on('tool(userTable)', function (obj) {
-                var currDatas  = obj.data;
+                var currDatas = obj.data;
+                // console.log(currDatas)
                 if (obj.event === 'changebtn') { // 修改
                     // showEditModel(obj.data);
-                    layer.prompt({title: '系统将对该用户进行封禁操作,确定当前用户进行封禁状态吗?', formType:2}, function(text, index){
-                        var param={};
-                        param['token']= $.cookie('tokenMyb');
-                        param['status']= '2';
-                        param['remark']= text;
-                        param['id']= currDatas.id;
+                    layer.prompt({title: '系统将对该用户进行封禁操作,确定当前用户进行封禁状态吗?', formType: 2}, function (text, index) {
+                        var param = {};
+                        param['token'] = $.cookie('tokenMyb');
+                        param['status'] = '2';
+                        param['remark'] = text;
+                        param['id'] = currDatas.id;
 
                         // param = wxgl_tgsh_btgbtn_jinyongbtn_Request($.cookie('tokenMyb'),'2',text,currDatas.wx_number,currDatas.id);
                         $.post(js_global_requestAddress_change_players_status, param,
-                            function(lookResult){
-                                if(lookResult.code === 200 ){
+                            function (lookResult) {
+                                if (lookResult.code === 200) {
                                     layer.msg(lookResult.msg);
                                     insTb.reload();
                                     layer.close(index);
-                                }else{
+                                } else {
 
 
                                 }
@@ -410,8 +465,31 @@
 
                 } else if (obj.event === 'del') { // 删除
                     doDel(obj);
-                } else if (obj.event === 'rechargebtn') { // 充值
-                    resetPsw(obj);
+                } else if (obj.event === 'rechargebtn') { // 回调
+                    jsondata = JSON.stringify(currDatas)
+                    var index = layui.layer.open({
+                        area: ['500px', '300px'],
+                        fixed: false, //不固定
+                        maxmin: false,
+                        title : "充值回调",
+                        skin: 'layui-layer-rim',//加上边框
+                        type : 2,
+                        content : "callback.html",
+                        success : function(layero, index){
+                            var body = layui.layer.getChildFrame('body', index);
+
+                        },
+                        end : function() {//弹窗关闭后的回调函数
+                            //利用laypage实现局部刷新,以下两种方式都可以
+                            // $(".layui-laypage-btn").click()
+                            //直接刷新当前修改的行
+                            $(".layui-laypage-btn")[0].click()
+
+                        }
+                    })
+
+
+                    return false
                 }
             });
 
@@ -551,7 +629,6 @@
         });
 
     }
-
 
 
 </script>

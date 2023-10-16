@@ -1,5 +1,5 @@
 //
-global_requestAddress = "";
+global_requestAddress = "http://8.219.211.59:7779";
 //登录接口
 global_requestAddressJs_login = global_requestAddress+ "/v2/login";
 
@@ -20,32 +20,43 @@ global_requestAddressJs_getAccountChange = global_requestAddress+ "/v2/getAccoun
 
 global_requestAddressJs_getBalanceChange = global_requestAddress+ "/v2/getBalanceChange";
 
+global_requestAddressJs_getConfig = global_requestAddress+ "/v2/getConfig";
+
+global_requestAddressJs_setConfig = global_requestAddress+ "/v2/setConfig";
+
+// 充值订单回调按钮接口
+global_requestAddressJs_handBackStatus = global_requestAddress+ "/v2/handBackStatus";
+
 
 var getRootPath_webStr = getRootPath_web();
+
+
+
+var currTimeZoneValue = 5
 
 //获取目录路径方法
 function getRootPath_web() {
 
-		//获取当前网址，如： http://localhost:8888/eeeeeee/aaaa/vvvv.html
-		var curWwwPath = window.document.location.href;
-		//获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
-		var pathName = window.document.location.pathname;
-		var pos = curWwwPath.indexOf(pathName);
-		//获取主机地址，如： http://localhost:8888
-		var localhostPaht = curWwwPath.substring(0, pos);
-		//获取带"/"的项目名，如：/abcd
-		var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
+	//获取当前网址，如： http://localhost:8888/eeeeeee/aaaa/vvvv.html
+	var curWwwPath = window.document.location.href;
+	//获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+	var pathName = window.document.location.pathname;
+	var pos = curWwwPath.indexOf(pathName);
+	//获取主机地址，如： http://localhost:8888
+	var localhostPaht = curWwwPath.substring(0, pos);
+	//获取带"/"的项目名，如：/abcd
+	var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
 
-		// return (localhostPaht + projectName);
-
-
-		// console.log("当前网址:"+curWwwPath);
-		// console.log("主机地址后的目录:"+pos+"----"+pathName);
-		// console.log("主机地址:"+localhostPaht);
-		// console.log("项目名:"+projectName);
+	// return (localhostPaht + projectName);
 
 
-		return projectName;
+	// console.log("当前网址:"+curWwwPath);
+	// console.log("主机地址后的目录:"+pos+"----"+pathName);
+	// console.log("主机地址:"+localhostPaht);
+	// console.log("项目名:"+projectName);
+
+
+	return projectName;
 }
 
 

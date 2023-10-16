@@ -258,3 +258,15 @@
     "type": "transaction"
 }
 2023-09-10T20:56:28.459+0800	[35mDEBUG[0m	util/util.go:202	回调地址:错误:Post "": unsupported protocol scheme ""
+2023-10-06T04:12:33.808+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:179	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-10-06T04:12:33.810+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:243	CreatePrepaidPhoneOrders   用户Okkd 不存在,创建
+2023-10-06T04:12:35.605+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:250	CreatePrepaidPhoneOrders   用户Okkd 返回空的地址,稍后重试
+2023-10-06T04:13:17.445+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:179	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-10-06T04:13:17.446+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:243	CreatePrepaidPhoneOrders   用户Okkd 不存在,创建
+2023-10-06T04:13:18.547+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:250	CreatePrepaidPhoneOrders   用户Okkd 返回空的地址,稍后重试
+2023-10-06T04:14:06.602+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:180	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-10-06T04:14:06.603+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:244	CreatePrepaidPhoneOrders   用户Okkd 不存在,创建
+2023-10-06T04:14:08.185+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:251	CreatePrepaidPhoneOrders   用户Okkd 返回空的地址,稍后重试
+2023-10-06T04:14:13.603+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:180	CreatePrepaidPhoneOrders jsonData:{"Username":"Okkd","PlatformOrder":"U2309101730","RechargeType":"USDT","AccountOrders":1000.0,"BackUrl":"abcdefg"}
+2023-10-06T04:14:13.604+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:244	CreatePrepaidPhoneOrders   用户Okkd 不存在,创建
+2023-10-06T04:14:14.891+0800	[35mDEBUG[0m	v2/PrepaidPhoneOrdersController.go:251	CreatePrepaidPhoneOrders   用户Okkd 返回空的地址,稍后重试

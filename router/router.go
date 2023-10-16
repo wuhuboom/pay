@@ -58,7 +58,7 @@ func Setup() *gin.Engine {
 		//资金归集
 		//GroupV2.GET("/getPayInformation", v2.GetPayInformation)
 		//充值订单管理
-		GroupV2.POST("/createPrepaidPhoneOrders", v2.CreatePrepaidPhoneOrders2)
+		GroupV2.POST("/createPrepaidPhoneOrders", v2.CreatePrepaidPhoneOrders3)
 		GroupV2.GET("/getPrepaidPhoneOrders", v2.GetPrepaidPhoneOrders)
 		//GetReceiveAddress 地址管理
 		GroupV2.GET("/getReceiveAddress", v2.GetReceiveAddress)

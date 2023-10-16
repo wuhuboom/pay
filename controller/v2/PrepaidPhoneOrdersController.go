@@ -139,6 +139,7 @@ func CreatePrepaidPhoneOrders2(c *gin.Context) {
 	}
 	var jsonDataT T
 	err := c.BindJSON(&jsonDataT)
+
 	if err != nil {
 		zap.L().Debug("CreatePrepaidPhoneOrders err1:" + err.Error())
 		tools.ReturnError101(c, "err1:"+err.Error())
@@ -187,7 +188,8 @@ func CreatePrepaidPhoneOrders2(c *gin.Context) {
 		if jsonData.AccountOrders <= admin.PondAmount {
 			//判断这个玩家近期是否已经拉起过地址 并且没有支付
 			pp := model.PrepaidPhoneOrders{}
-			err := mysql.DB.Where("username=? and created >  ? and account_orders <= ?", jsonData.Username, time.Now().Unix()-admin.Expiration*60, admin.PondAmount).First(&pp).Error
+			err := mysql.DB.Where("username=? and created >  ? and account_orders <= ?",
+				jsonData.Username, time.Now().Unix()-admin.Expiration*60, admin.PondAmount).First(&pp).Error
 			if err == nil {
 				//重复使用这个地址
 				mysql.DB.Where("address=?", pp.RechargeAddress).First(&re)
@@ -197,7 +199,8 @@ func CreatePrepaidPhoneOrders2(c *gin.Context) {
 			} else {
 				GetAddressLock.Lock()
 				//获取可用的地址
-				err = mysql.DB.Where("kinds=? and last_use_time < ?", 2, time.Now().Unix()).Order("receive_nums asc").First(&re).Error
+				err = mysql.DB.Where("kinds=? and last_use_time < ? and status=?", 2,
+					time.Now().Unix(), 1).Order("receive_nums asc").First(&re).Error
 				//找到这个地址 err==nil  没有找到 err !=nil
 				if err != nil {
 					//没有找到对应的地址要去获取新的  首先判断池大小
@@ -278,7 +281,170 @@ func CreatePrepaidPhoneOrders2(c *gin.Context) {
 		RechargeType:    jsonData.RechargeType,
 		BackUrl:         jsonData.BackUrl,
 		ThreeOrder:      time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(100000)),
-		Status:          1, Created: time.Now().Unix(),
+		Status:          1, Created: time.Now().Unix(), ThreeBack: 1,
+	}
+
+	err = mysql.DB.Save(&p).Error
+	if err != nil {
+		zap.L().Debug("CreatePrepaidPhoneOrders err6:" + err.Error())
+		tools.ReturnError101(c, "err6:"+err.Error())
+		return
+	}
+	aUrl := viper.GetString("eth.RechargingJumpAddress") + "?Address=" + re.Address + "&RechargeType=" + jsonData.RechargeType + "&AccountOrders=" + strconv.FormatFloat(jsonData.AccountOrders, 'f', 2, 64) + "&PlatformOrder=" + jsonData.PlatformOrder
+	type ReturnData struct {
+		UrlAddress string
+	}
+	var oo ReturnData
+	oo.UrlAddress = aUrl
+	data, err := json.Marshal(oo)
+	if err != nil {
+		zap.L().Debug("CreatePrepaidPhoneOrders err7:" + err.Error())
+		tools.ReturnError101(c, "err7:"+err.Error())
+		return
+	}
+
+	data, err = util.RsaEncryptForEveryOne(data)
+	if err != nil {
+		zap.L().Debug("CreatePrepaidPhoneOrders err8:" + err.Error())
+		tools.ReturnError101(c, "err8:"+err.Error())
+		return
+	}
+	//充值订单创建成功
+	tools.ReturnError200Data(c, base64.StdEncoding.EncodeToString(data), "Ok")
+	return
+}
+
+// CreatePrepaidPhoneOrders3 生成订单
+func CreatePrepaidPhoneOrders3(c *gin.Context) {
+	type T struct {
+		Data string `json:"data"`
+	}
+	var jsonDataT T
+	err := c.BindJSON(&jsonDataT)
+
+	if err != nil {
+		zap.L().Debug("CreatePrepaidPhoneOrders err1:" + err.Error())
+		tools.ReturnError101(c, "err1:"+err.Error())
+		return
+	}
+	decodeString, err1 := base64.StdEncoding.DecodeString(jsonDataT.Data)
+	if err1 != nil {
+		zap.L().Debug("CreatePrepaidPhoneOrders err2:" + err1.Error())
+		tools.ReturnError101(c, "err2:"+err1.Error())
+		return
+	}
+	origData, err2 := util.RsaDecrypt(decodeString)
+	if err2 != nil {
+		zap.L().Debug("CreatePrepaidPhoneOrders err3:" + err2.Error())
+		tools.ReturnError101(c, "err3:"+err2.Error())
+		return
+	}
+
+	var jsonData CreatePrepaidPhoneOrdersData
+	err3 := json.Unmarshal(origData, &jsonData)
+	if err3 != nil {
+		zap.L().Debug("CreatePrepaidPhoneOrders err4:" + err3.Error())
+		tools.ReturnError101(c, "err4:"+err3.Error())
+		return
+	}
+
+	//判断用户是存在充值地址
+	if jsonData.Username == "" {
+		tools.ReturnError101(c, "用户名不可以为空")
+		return
+	}
+
+	//玩家拉起的金额小于系统设置的小于系统的金额
+	re := model.ReceiveAddress{}
+	//判断是否有专属地址
+	fmt.Println("用户名:" + jsonData.Username)
+	zap.L().Debug("CreatePrepaidPhoneOrders jsonData:" + string(origData))
+	err = mysql.DB.Where("username=?", jsonData.Username).First(&re).Error
+	if err != nil {
+		//判断这个人下注金额
+		admin := model.Admin{}
+		admin.PondAmount = 5
+		admin.Expiration = 30
+		admin.MaxPond = 1000
+		mysql.DB.Where("id=?", 1).First(&admin)
+
+		if jsonData.AccountOrders <= admin.PondAmount {
+			//判断这个玩家近期是否已经拉起过地址 并且没有支付
+			pp := model.PrepaidPhoneOrders{}
+			err := mysql.DB.Where("username=? and created >  ? and account_orders <= ?",
+				jsonData.Username, time.Now().Unix()-admin.Expiration*60, admin.PondAmount).First(&pp).Error
+			if err == nil {
+				//重复使用这个地址
+				mysql.DB.Where("address=?", pp.RechargeAddress).First(&re)
+				mysql.DB.Model(&model.ReceiveAddress{}).Where("address=?", pp.RechargeAddress).Updates(
+					&model.ReceiveAddress{LastUseTime: time.Now().Unix() + admin.Expiration*60, ReceiveNums: re.ReceiveNums + 1})
+
+			} else {
+				GetAddressLock.Lock()
+				//获取可用的地址
+				err = mysql.DB.Where("kinds=? and last_use_time < ? and status=?", 2,
+					time.Now().Unix(), 1).Order("receive_nums asc").First(&re).Error
+				//找到这个地址 err==nil  没有找到 err !=nil
+				if err != nil {
+					//没找到  去找下没开放的的地址
+					err = mysql.DB.Where("kinds=? and last_use_time < ? and status=?", 2,
+						time.Now().Unix(), 2).Order("receive_nums asc").First(&re).Error
+					if err != nil {
+						//池子已经满了
+						zap.L().Debug("CreatePrepaidPhoneOrders  line 190 用户" + jsonData.Username + " 池子已经满了")
+						GetAddressLock.Unlock()
+						return
+					}
+
+				}
+				//找到了 要更新
+				mysql.DB.Model(&model.ReceiveAddress{}).Where("id=?", re.ID).Updates(
+					&model.ReceiveAddress{LastUseTime: time.Now().Unix() + admin.Expiration*60, ReceiveNums: re.ReceiveNums + 1})
+				GetAddressLock.Unlock()
+			}
+		} else {
+			//金额订单大于临界点 分配专属地址
+			re.Username = jsonData.Username
+			zap.L().Debug("CreatePrepaidPhoneOrders   用户" + jsonData.Username + " 不存在,创建")
+			re.CreateUsername(mysql.DB, viper.GetString("eth.ThreeUrl"))
+			if re.Address == "" {
+				tools.ReturnError101(c, "返回空的地址,稍后重试")
+				//生成 地址日志
+				logs := model.GetAddressLogs{Address: "获取地址为空,请检查大神服务器", Username: re.Username, Status: 2}
+				logs.CreateGetAddressLogs(mysql.DB)
+				zap.L().Debug("CreatePrepaidPhoneOrders   用户" + jsonData.Username + " 返回空的地址,稍后重试")
+				return
+			}
+			//生成 地址日志
+			logs := model.GetAddressLogs{Address: re.Address, Username: re.Username, Status: 1}
+			logs.CreateGetAddressLogs(mysql.DB)
+		}
+	}
+
+	if strings.ToUpper(jsonData.RechargeType) != "USDT" {
+		zap.L().Debug("CreatePrepaidPhoneOrders RechargeType is error")
+		tools.ReturnError101(c, "RechargeType is error")
+		return
+	}
+
+	// 存在就更新数据
+	//生成充值订单
+	//判断平台订单是否重复
+	err = mysql.DB.Where("platform_order=?", jsonData.PlatformOrder).First(&model.PrepaidPhoneOrders{}).Error
+	if err == nil {
+		zap.L().Debug("CreatePrepaidPhoneOrders 不要重复提交")
+		tools.ReturnError101(c, "不要重复提交")
+		return
+	}
+	p := model.PrepaidPhoneOrders{
+		PlatformOrder:   jsonData.PlatformOrder,
+		RechargeAddress: re.Address, //玩家需要充值的地址
+		AccountOrders:   jsonData.AccountOrders,
+		Username:        jsonData.Username,
+		RechargeType:    jsonData.RechargeType,
+		BackUrl:         jsonData.BackUrl,
+		ThreeOrder:      time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(100000)),
+		Status:          1, Created: time.Now().Unix(), ThreeBack: 1,
 	}
 
 	err = mysql.DB.Save(&p).Error
@@ -420,20 +586,66 @@ func Getaddr(c *gin.Context) {
 // HandBackStatus 手动回调
 func HandBackStatus(c *gin.Context) {
 	id := c.Query("id")
+	txHash := c.Query("tx_hash")
+
+	if len(txHash) != 64 {
+		tools.ReturnError101(c, "填写正确的hash值")
+		return
+	}
+
+	actualAmount, _ := strconv.ParseFloat(c.Query("actual_amount"), 64)
 	p := model.PrepaidPhoneOrders{}
 	err := mysql.DB.Where("id=?", id).First(&p).Error
 	if err != nil {
 		tools.ReturnError101(c, "订单不存在")
 		return
 	}
-	err = mysql.DB.Model(&model.PrepaidPhoneOrders{}).Where("id=?", id).Update(&model.PrepaidPhoneOrders{ThreeBack: 4}).Error
+
+	if p.ThreeBack != 1 {
+		tools.ReturnError101(c, "不要重复回调")
+		return
+	}
+
+	order := model.PayOrder{TxHash: txHash, Amount: actualAmount}
+	if order.IfIsExitsThisData(mysql.DB) {
+		tools.ReturnError101(c, "这个hash已经存在了~")
+		return
+	}
+	mysql.DB.Save(&order)
+
+	err = mysql.DB.Model(&model.PrepaidPhoneOrders{}).Where("id=?", id).Update(
+		&model.PrepaidPhoneOrders{ThreeBack: 4, Status: 2, AccountPractical: actualAmount}).Error
 	if err != nil {
 		tools.ReturnError101(c, err.Error())
 		return
 	}
+
+	//回调给三方
+	type Create struct {
+		PlatformOrder    string
+		RechargeAddress  string
+		Username         string
+		AccountOrders    float64 //订单充值金额
+		AccountPractical float64 //  实际充值的金额
+		RechargeType     string
+		BackUrl          string
+	}
+	var tt Create
+	tt.PlatformOrder = p.PlatformOrder
+	tt.RechargeAddress = p.RechargeAddress
+	tt.Username = p.Username
+	tt.AccountOrders = p.AccountOrders
+	tt.AccountPractical = actualAmount
+	tt.RechargeType = p.RechargeType
+	data, err := json.Marshal(tt)
+	if err != nil {
+		tools.ReturnError101(c, err.Error())
+		return
+	}
+	data, err = util.RsaEncryptForEveryOne(data)
+	util.BackUrlToPay(p.BackUrl, base64.StdEncoding.EncodeToString(data))
 	tools.ReturnError200(c, "修改成功")
 	return
-
 }
 
 // GetAddressForLastTimeGetMoney 获取回去有多少钱没有进账的地址

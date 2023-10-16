@@ -19,7 +19,6 @@ import (
 func GetPayInformationBack(c *gin.Context) {
 	var jsonDataTwo ReturnBase64
 	err := c.BindJSON(&jsonDataTwo)
-	//fmt.Println(jsonDataTwo)
 	if err != nil {
 		tools.ReturnError101(c, "err:"+err.Error())
 		return
@@ -57,6 +56,7 @@ func GetPayInformationBack(c *gin.Context) {
 		tools.ReturnError200(c, "余额变动成功")
 		return
 	}
+
 	p := model.PayOrder{}
 	p.TxHash = jsonData.Data.TxHash
 	if p.IfIsExitsThisData(mysql.DB) {
@@ -93,7 +93,7 @@ func GetPayInformationBack(c *gin.Context) {
 		Successfully:      p.Timestamp,
 		AccountPractical:  p.Amount,
 		RechargeType:      strings.ToUpper(p.Token),
-		RechargeAddress:   p.ToAddress,   //收账地址
+		RechargeAddress:   p.ToAddress, //收账地址
 		CollectionAddress: p.FromAddress} //玩家地址
 	if rare.Kinds == 1 {
 		//寻找这个账号最早的充值订单

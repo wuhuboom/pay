@@ -7,6 +7,7 @@
     <title>账单</title>
     <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
     <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script src="../../assets/js/moment.js"></script>
 
     <style>
 
@@ -171,6 +172,9 @@
             var insTb = table.render({
                 elem: '#userTable',
                 url: global_requestAddressJs_getAccountChange+"?action=GET&receive_address_name="+currParentDatas.Username,
+                headers:{
+                    "token": mybck,
+                },
                 // method: 'post',
                 // where:log_login_request_param,
                 // toolbar: ['<p>',
@@ -187,7 +191,7 @@
                 },
                 height : "full-100",
                 limit : 15,
-                limits : [15,30,100,500],
+                limits: [15, 30, 50, 100,500,2000],
                 // id : "systemLog",
                 cols: [[
                     {type: "checkbox", width: 50},
@@ -212,7 +216,8 @@
                     },
                     {
                         field: 'Created', width: 200, title: '创建时间',align:"center", templet: function (d) {
-                            return util.toDateString(d.Created* 1000);
+                            // return util.toDateString(d.Created* 1000);
+                            return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                         }, sort: true
                     },
                     {field: 'ReceiveAddressName', title: '用户名',align: "center"},

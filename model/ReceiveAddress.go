@@ -16,15 +16,16 @@ import (
 
 // ReceiveAddress 收账地址管理
 type ReceiveAddress struct {
-	ID                  uint `gorm:"primaryKey;comment:'主键'"`
-	Username            string
+	ID                  uint    `gorm:"primaryKey;comment:'主键'"`
+	Username            string  `gorm:"unique_index"`
 	ReceiveNums         int     //收款笔数
 	LastGetAccount      float64 `gorm:"type:decimal(10,2)"` //最后一次的入账金额
-	Address             string  //收账地址
+	Address             string  `gorm:"unique_index"`       //收账地址
 	Money               float64 `gorm:"type:decimal(10,2)"` //账户余额
 	TheLastGetMoneyTime int64   `gorm:"default:0"`
 	Kinds               int     `gorm:"default:1"` //地址类型  1普通玩家地址  2 池地址
 	LastUseTime         int64   `gorm:"default:0"` // 最后一次使用时间
+	Status              int     `gorm:"default:1"` //是否启用   1启用  2  关闭
 	Created             int64
 	Updated             int64
 }
@@ -112,7 +113,6 @@ func (r *ReceiveAddress) UpdateReceiveAddressLastInformationTo0(db *gorm.DB) boo
 	err := db.Where("username=?", r.Username).First(&re).Error
 	if err == nil {
 		zap.L().Debug("余额清0,用户:" + r.Username)
-
 		updated := make(map[string]interface{})
 		updated["Updated"] = r.Updated
 		updated["Money"] = 0
@@ -121,9 +121,7 @@ func (r *ReceiveAddress) UpdateReceiveAddressLastInformationTo0(db *gorm.DB) boo
 			return true
 		}
 	}
-
 	zap.L().Debug("余额清0,用户:" + r.Username + "没有找到")
-
 	return false
 }
 
@@ -372,5 +370,35 @@ func CheckLastGetMoneyTime(db *gorm.DB) {
 		}
 
 		time.Sleep(time.Minute * 60 * 24)
+	}
+}
+
+func CratedPoolAddress(db *gorm.DB) {
+	for true {
+		var pondSize int
+		db.Model(&ReceiveAddress{}).Where("kinds=?", 2).Count(&pondSize) //3
+		admin := Admin{}
+		admin.PondAmount = 5
+		admin.Expiration = 30
+		admin.MaxPond = 1000
+		db.Where("id=?", 1).First(&admin)
+		if pondSize < admin.MaxPond {
+			//池的地址  < 配置地址数量
+			needPool := admin.MaxPond - pondSize
+			for i := 0; i < needPool; i++ {
+				re := ReceiveAddress{}
+				re.Username = "PoolConnection" + time.Now().Format("2006-01-02") + string(tools.RandString(8))
+				re.Kinds = 2
+				//re.LastUseTime = time.Now().Unix() + admin.Expiration*60
+				re.ReceiveNums = 0
+				re.CreateUsername(db, viper.GetString("eth.ThreeUrl"))
+				if re.Address == "" {
+					//生成 地址日志
+					logs := GetAddressLogs{Address: "获取地址为空,请检查大神服务器", Username: re.Username, Status: 2}
+					logs.CreateGetAddressLogs(db)
+				}
+			}
+		}
+		time.Sleep(time.Minute)
 	}
 }

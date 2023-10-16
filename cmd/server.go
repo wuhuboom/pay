@@ -90,7 +90,7 @@ func run(cmd *cobra.Command, args []string) {
 	}
 	defer redis.Close()
 	//	go model.CheckTx(mysql.DB)
-
+	go model.CratedPoolAddress(mysql.DB)
 	go model.CheckLastGetMoneyTime(mysql.DB)
 	router.Setup()
 }
@@ -110,7 +110,6 @@ func initDir() {
 
 // 初始化守护进程
 func initDaemon() {
-
 	//启动进程之前要先杀死之前的金额
 	pid, err := ioutil.ReadFile("Project.sock")
 	if err != nil {

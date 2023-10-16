@@ -43,6 +43,25 @@ func SetConfig(c *gin.Context) {
 	if pondAmount == 0 {
 		pondAmount = 5
 	}
+	//池设置要单独处理下
+	var total int64
+	mysql.DB.Model(&model.ReceiveAddress{}).Where("kinds=? and status=?", 2, 1).Count(&total)
+	// 现在所有的地址大于池地址
+	if total > int64(maxPond) {
+		race := make([]model.ReceiveAddress, 0)
+		mysql.DB.Where("kinds=? and status=?", 2, 1).
+			Order("receive_nums asc ").Limit(total - int64(maxPond)).Find(&race)
+		for _, address := range race {
+			mysql.DB.Model(&model.ReceiveAddress{}).Where("id=?", address.ID).Updates(&model.ReceiveAddress{Status: 2})
+		}
+	} else {
+		race := make([]model.ReceiveAddress, 0)
+		mysql.DB.Where("kinds=? and status=?", 2, 2).
+			Order("receive_nums asc ").Limit(total - int64(maxPond)).Find(&race)
+		for _, address := range race {
+			mysql.DB.Model(&model.ReceiveAddress{}).Where("id=?", address.ID).Updates(&model.ReceiveAddress{Status: 1})
+		}
+	}
 
 	mysql.DB.Model(&model.Admin{}).Where("id=?", 1).Updates(&model.Admin{
 		MaxPond:    maxPond,

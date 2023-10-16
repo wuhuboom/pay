@@ -147,7 +147,7 @@ func (p *PrepaidPhoneOrders) UpdateMaxCreatedOfStatusToTwo(db *gorm.DB, OrderEff
 }
 
 // UpdatePondOrderCratedAndUpdated 修改池子的订单
-func (p PrepaidPhoneOrders) UpdatePondOrderCratedAndUpdated(db *gorm.DB) bool {
+func (p *PrepaidPhoneOrders) UpdatePondOrderCratedAndUpdated(db *gorm.DB) bool {
 	type Create struct {
 		PlatformOrder    string
 		RechargeAddress  string
